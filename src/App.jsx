@@ -395,6 +395,19 @@ function App() {
 
         <div className="sidebar-body">
           <div className="sidebar-nav-section">
+            <h3>NAVIGATION</h3>
+            <ul className="mobile-nav-list">
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('home'); toggleMobileMenu(); }}>HOME</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); toggleMobileMenu(); }}>ABOUT US</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); toggleMobileMenu(); }}>HOW IT WORKS</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); toggleMobileMenu(); }}>WEB DEVELOPMENT</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); toggleMobileMenu(); }}>MOBILE APP DEVELOPMENT</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); toggleMobileMenu(); }}>REQUEST A QUOTE</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); toggleMobileMenu(); }}>CONTACT US</a></li>
+            </ul>
+          </div>
+
+          <div className="sidebar-nav-section">
             <h3>HEAD OFFICE – INDIA</h3>
             <div className="office-info">
               <p><MapPin size={16} /> No.20/9, Sardar Patel Road, Janaki Complex, 4th Floor, Adyar, Chennai – 600020</p>
@@ -581,7 +594,7 @@ function App() {
           text-decoration: none;
           color: #333;
           font-weight: 600;
-          font-size: 16px;
+          font-size: 14px;
           display: flex;
           align-items: center;
           gap: 5px;
@@ -617,7 +630,7 @@ function App() {
           padding: 15px 25px !important;
           color: #444 !important;
           font-weight: 700 !important;
-          font-size: 16px !important;
+          font-size: 14px !important;
           text-transform: uppercase !important;
           display: block !important;
           white-space: nowrap !important;
@@ -637,6 +650,15 @@ function App() {
           display: flex;
           gap: 20px;
           color: var(--dark-blue);
+        }
+
+        .menu-trigger {
+          cursor: pointer;
+          transition: color 0.3s ease;
+        }
+
+        .menu-trigger:hover {
+          color: var(--accent-orange);
         }
 
         .hero-banner {
@@ -983,8 +1005,9 @@ function App() {
         .mobile-sidebar {
           position: fixed;
           top: 0;
-          right: -400px;
-          width: 400px;
+          right: -100%;
+          width: 85%;
+          max-width: 320px;
           height: 100vh;
           background: white;
           z-index: 1000;
@@ -1070,6 +1093,31 @@ function App() {
           z-index: 999;
         }
 
+        .mobile-nav-list {
+          list-style: none;
+          padding: 0;
+          margin-bottom: 20px;
+        }
+
+        .mobile-nav-list li {
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .mobile-nav-list li a {
+          text-decoration: none;
+          color: var(--dark-blue);
+          font-weight: 700;
+          font-size: 16px;
+          display: block;
+          padding: 12px 0;
+          transition: all 0.3s ease;
+        }
+
+        .mobile-nav-list li a:hover {
+          color: var(--accent-orange);
+          padding-left: 10px;
+        }
+
         @media (max-width: 1200px) {
           .hero-text h1 { font-size: 48px; }
           .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -1090,6 +1138,7 @@ function App() {
           .services-grid-main { grid-template-columns: 1fr; }
           .top-bar-right { display: none; }
           .hero-text h1 { font-size: 36px; }
+          .container { padding: 0 20px; }
         }
 
         @media (max-width: 576px) {
@@ -1109,12 +1158,32 @@ function App() {
             gap: 20px;
             text-align: center;
           }
+          .main-logo-img {
+            height: 60px;
+          }
         }
 
         @media (max-width: 480px) {
           .mobile-sidebar {
-            width: 100%;
+            width: 85%;
             right: -100%;
+          }
+          .hero-text h1 {
+            font-size: 28px;
+          }
+          .hero-text p {
+            font-size: 16px;
+          }
+          .discover-btn-premium {
+            width: 100%;
+            padding: 15px 20px;
+          }
+          .container {
+            padding: 0 15px;
+          }
+          .hero-features {
+            grid-template-columns: 1fr;
+            gap: 10px;
           }
         }
       `}</style>

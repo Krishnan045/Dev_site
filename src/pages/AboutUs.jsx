@@ -40,7 +40,7 @@ const AboutUs = () => {
       </section>
 
       {/* Statistics Section */}
-      <section className="stats-section">
+      <section className="stats-section reveal fade-up">
         <div className="container">
           <motion.div
             variants={containerVariants}
@@ -65,7 +65,7 @@ const AboutUs = () => {
       </section>
 
       {/* Detailed Story Section */}
-      <section className="story-section">
+      <section className="story-section reveal fade-up">
         <div className="container">
           <div className="story-grid">
             <motion.div
@@ -101,7 +101,7 @@ const AboutUs = () => {
       </section>
 
       {/* Core Values Section */}
-      <section className="values-section">
+      <section className="values-section reveal fade-up">
         <div className="container">
           <motion.div
             initial={{ opacity: 0 }}
@@ -136,7 +136,7 @@ const AboutUs = () => {
       </section>
 
       {/* Vision & Mission */}
-      <section className="vision-mission">
+      <section className="vision-mission reveal fade-up">
         <div className="container">
           <motion.div
             variants={containerVariants}

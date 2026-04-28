@@ -81,7 +81,7 @@ const HowItWorks = ({ setActivePage }) => {
       </section>
 
       {/* Consultation Section */}
-      <section className="consultation-section">
+      <section className="consultation-section reveal fade-up">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -103,7 +103,7 @@ const HowItWorks = ({ setActivePage }) => {
       </section>
 
       {/* Timeline Section */}
-      <section className="timeline-section">
+      <section className="timeline-section reveal fade-up">
         <div className="container">
           <div className="timeline">
             {steps.map((step, index) => (
@@ -128,7 +128,7 @@ const HowItWorks = ({ setActivePage }) => {
       </section>
 
       {/* FAQ Section */}
-      <section className="faq-section">
+      <section className="faq-section reveal fade-up">
         <div className="container">
           <motion.div
             initial={{ opacity: 0 }}
@@ -172,7 +172,7 @@ const HowItWorks = ({ setActivePage }) => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         .how-hero {
           background-image: linear-gradient(rgba(11, 19, 43, 0.8), rgba(11, 19, 43, 0.8)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200');
           background-size: cover;

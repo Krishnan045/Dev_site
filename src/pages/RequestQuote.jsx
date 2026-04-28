@@ -26,7 +26,7 @@ const RequestQuote = () => {
             <button className="back-home-btn" onClick={() => window.location.reload()}>SEND ANOTHER REQUEST</button>
           </motion.div>
         </div>
-        <style jsx>{`
+        <style>{`
           .quote-success-page {
             padding: 160px 0;
             text-align: center;
@@ -188,7 +188,7 @@ const RequestQuote = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         .quote-hero {
           background-color: #0b132b;
           background-image: linear-gradient(rgba(9, 11, 19, 0.85), rgba(43, 52, 79, 0.85)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200');

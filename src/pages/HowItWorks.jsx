@@ -10,25 +10,25 @@ const HowItWorks = ({ setActivePage }) => {
       title: "Discovery & Analysis",
       desc: "We perform a deep dive into your business ecosystem. This includes competitor benchmarking, user persona mapping, and technical feasibility studies to ensure a solid foundation.",
       icon: <Search />,
-      color: "#5e5ce6"
+      color: "#10b981"
     },
     {
       title: "Design & UX Strategy",
       desc: "Our design process is human-centric. We create wireframes and high-fidelity prototypes that are tested for usability and aesthetic appeal before a single line of code is written.",
       icon: <PenTool />,
-      color: "#f15a24"
+      color: "#059669"
     },
     {
       title: "Agile Development",
       desc: "Using industry-best practices, our developers build your solution in sprints. We maintain high code quality with automated testing and continuous integration.",
       icon: <Code2 />,
-      color: "#2ecc71"
+      color: "#10b981"
     },
     {
       title: "Launch & Optimization",
       desc: "Beyond deployment, we monitor performance and user feedback. We provide continuous updates and digital marketing integration to scale your product effectively.",
       icon: <Rocket />,
-      color: "#3498db"
+      color: "#f59e0b"
     }
   ];
 
@@ -137,7 +137,7 @@ const HowItWorks = ({ setActivePage }) => {
             viewport={{ once: true }}
             className="section-header-centered"
           >
-            <HelpCircle size={40} color="#5e5ce6" style={{ marginBottom: '20px' }} />
+            <HelpCircle size={40} color="#10b981" style={{ marginBottom: '20px' }} />
             <h2>Frequently Asked Questions</h2>
             <p>Transparency is one of our core values. Here are answers to some of the most common questions our clients ask.</p>
           </motion.div>
@@ -174,7 +174,7 @@ const HowItWorks = ({ setActivePage }) => {
 
       <style>{`
         .how-hero {
-          background-image: linear-gradient(rgba(11, 19, 43, 0.8), rgba(11, 19, 43, 0.8)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200');
+          background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200');
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
@@ -216,7 +216,7 @@ const HowItWorks = ({ setActivePage }) => {
         }
         .consult-text h2 {
           font-size: 36px;
-          color: #0b132b;
+          color: #020617;
           margin-bottom: 20px;
         }
         .consult-text p {
@@ -226,7 +226,7 @@ const HowItWorks = ({ setActivePage }) => {
           line-height: 1.7;
         }
         .consult-btn {
-          background: #5e5ce6;
+          background: #10b981;
           color: white;
           border: none;
           padding: 15px 40px;
@@ -236,9 +236,9 @@ const HowItWorks = ({ setActivePage }) => {
           transition: all 0.3s ease;
         }
         .consult-btn:hover {
-          background: #3a0ca3;
+          background: #059669;
           transform: translateY(-3px);
-          box-shadow: 0 10px 20px rgba(94, 92, 230, 0.3);
+          box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
         .consult-image img {
           width: 100%;
@@ -259,8 +259,8 @@ const HowItWorks = ({ setActivePage }) => {
           content: '';
           position: absolute;
           width: 4px;
-          background-color: #5e5ce6;
-          opacity: 0.2;
+          background-color: #10b981;
+          opacity: 0.1;
           top: 0;
           bottom: 0;
           left: 50%;
@@ -281,11 +281,11 @@ const HowItWorks = ({ setActivePage }) => {
           height: 24px;
           right: -12px;
           background-color: white;
-          border: 5px solid #5e5ce6;
+          border: 5px solid #10b981;
           top: 40px;
           border-radius: 50%;
           z-index: 1;
-          box-shadow: 0 0 15px rgba(94, 92, 230, 0.4);
+          box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
         }
         .timeline-item.right::after { left: -12px; }
         .timeline-content {
@@ -317,11 +317,11 @@ const HowItWorks = ({ setActivePage }) => {
           font-size: 60px;
           font-weight: 900;
           opacity: 0.03;
-          color: #0b132b;
+          color: #020617;
         }
         .timeline-content h3 {
           font-size: 28px;
-          color: #0b132b;
+          color: #020617;
           margin-bottom: 20px;
         }
         .timeline-content p {
@@ -348,13 +348,13 @@ const HowItWorks = ({ setActivePage }) => {
         }
         .faq-item:hover {
           background: #fff;
-          border-color: #5e5ce6;
+          border-color: #10b981;
           box-shadow: 0 10px 20px rgba(0,0,0,0.03);
         }
         .faq-item.active {
           background: #fff;
-          border-color: #5e5ce6;
-          box-shadow: 0 15px 30px rgba(94, 92, 230, 0.08);
+          border-color: #10b981;
+          box-shadow: 0 15px 30px rgba(16, 185, 129, 0.08);
         }
         .faq-question {
           padding: 18px 30px;
@@ -364,7 +364,7 @@ const HowItWorks = ({ setActivePage }) => {
         }
         .faq-question h4 {
           font-size: 20px;
-          color: #0b132b;
+          color: #020617;
           font-weight: 700;
         }
         .faq-answer {

@@ -31,7 +31,7 @@ import {
   UploadCloud,
   HeartHandshake
 } from 'lucide-react';
-import mobileDevImg from '../images/mobile_dev.png';
+import mobileDevImg from 'C:/Users/KRISHNAKUMAR P/.gemini/antigravity/brain/eae43536-d91e-452e-84bb-dc649d8dfc83/mobile_hero_indigo_themed_1777539635317.png';
 
 const MobileDevelopment = ({ setActivePage }) => {
   const [activeAccordion, setActiveAccordion] = useState(null);
@@ -77,22 +77,40 @@ const MobileDevelopment = ({ setActivePage }) => {
 
   return (
     <div className="mobile-dev-premium">
-      {/* Hero Section */}
-      <section className="cartoon-hero-fixed">
-        <div className="container-full">
+      {/* Professional Hero Section */}
+      <section className="service-hero-v2 hero-theme-indigo">
+        <div className="container">
           <motion.div 
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="hero-main-illustration"
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ 
+              opacity: 1, 
+              scale: [1, 1.02, 1], 
+              y: [0, -15, 0] 
+            }}
+            transition={{ 
+              opacity: { duration: 1.2 },
+              scale: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+              y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="hero-visual-v2"
           >
-            <motion.img 
-              src={mobileDevImg} 
-              alt="Mobile Development Illustration" 
-              className="cartoon-img"
-              animate={{ y: [0, -15, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
+            <div className="hero-shape-1"></div>
+            <div className="hero-shape-2"></div>
+            <img src={mobileDevImg} alt="Mobile App Development" className="hero-main-img-v2" />
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="hero-content-v2"
+          >
+            <span className="hero-tagline" style={{ color: '#818cf8', borderColor: '#818cf8' }}>Mobile Innovation</span>
+            <h1>Next-Gen <br /><span className="text-gradient-indigo-v2">Mobile Experiences</span></h1>
+            <p>Building immersive iOS and Android applications that engage users and drive tangible business results.</p>
+            <div className="hero-cta-group">
+              <button className="btn-hero-primary btn-indigo" onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>View Portfolio</button>
+              <button className="btn-hero-outline" onClick={() => setActivePage('quote')}>Get a Quote</button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -257,12 +275,12 @@ const MobileDevelopment = ({ setActivePage }) => {
  
           <div className="process-vertical-timeline">
             {[
-              { title: "Requirement Discovery", desc: "Deep dive into your business needs, target audience, and project goals.", icon: <FileSearch />, color: "#818cf8" },
-              { title: "Strategic Design", desc: "Creating intuitive UI/UX wireframes and high-fidelity mockups for approval.", icon: <Palette />, color: "#60a5fa" },
-              { title: "Agile Development", desc: "Writing robust, clean code with regular updates and feature builds.", icon: <Binary />, color: "#2dd4bf" },
-              { title: "Rigorous Testing", desc: "Comprehensive QA testing across multiple devices to ensure bug-free performance.", icon: <TestTube2 />, color: "#fbbf24" },
-              { title: "App Launch", desc: "Smooth deployment to App Store and Google Play with complete support.", icon: <UploadCloud />, color: "#f87171" },
-              { title: "Growth & Maintenance", desc: "Post-launch support, regular updates, and optimization for scaling.", icon: <HeartHandshake />, color: "#6366f1" }
+              { title: "Requirement Discovery", desc: "Deep dive into your business needs, target audience, and project goals.", icon: <FileSearch />, color: "#10b981" },
+              { title: "Strategic Design", desc: "Creating intuitive UI/UX wireframes and high-fidelity mockups for approval.", icon: <Palette />, color: "#34d399" },
+              { title: "Agile Development", desc: "Writing robust, clean code with regular updates and feature builds.", icon: <Binary />, color: "#059669" },
+              { title: "Rigorous Testing", desc: "Comprehensive QA testing across multiple devices to ensure bug-free performance.", icon: <TestTube2 />, color: "#f59e0b" },
+              { title: "App Launch", desc: "Smooth deployment to App Store and Google Play with complete support.", icon: <UploadCloud />, color: "#10b981" },
+              { title: "Growth & Maintenance", desc: "Post-launch support, regular updates, and optimization for scaling.", icon: <HeartHandshake />, color: "#059669" }
             ].map((step, i) => (
               <motion.div 
                 key={i}
@@ -279,7 +297,6 @@ const MobileDevelopment = ({ setActivePage }) => {
                   {i < 5 && <div className="step-line" style={{ background: `linear-gradient(to bottom, ${step.color}, #e2e8f0)` }}></div>}
                 </div>
                 <div className="step-content">
-                  <span className="step-number">Phase 0{i + 1}</span>
                   <h3>{step.title}</h3>
                   <p>{step.desc}</p>
                 </div>
@@ -365,7 +382,7 @@ const MobileDevelopment = ({ setActivePage }) => {
           font-family: 'Inter', sans-serif;
         }
 
-        .text-mild-blue { color: #818cf8; }
+        .text-mild-blue { color: #10b981; }
 
         .cartoon-hero-fixed {
           background: #ffffff;
@@ -425,8 +442,8 @@ const MobileDevelopment = ({ setActivePage }) => {
 
         .type-card:hover {
           transform: translateY(-10px);
-          border-color: #e0e7ff;
-          box-shadow: 0 20px 40px rgba(129, 140, 248, 0.08);
+          border-color: #d1fae5;
+          box-shadow: 0 20px 40px rgba(16, 185, 129, 0.08);
         }
 
         .type-icon-box {
@@ -474,7 +491,7 @@ const MobileDevelopment = ({ setActivePage }) => {
         .info-tag {
           font-size: 13px;
           font-weight: 800;
-          color: #818cf8;
+          color: #10b981;
           text-transform: uppercase;
           margin-bottom: 15px;
           display: block;
@@ -532,7 +549,7 @@ const MobileDevelopment = ({ setActivePage }) => {
           left: 0;
           top: 4px;
           font-size: 11px;
-          color: #818cf8;
+          color: #10b981;
         }
 
         .info-visual img {
@@ -620,7 +637,7 @@ const MobileDevelopment = ({ setActivePage }) => {
         .step-number {
           font-size: 13px;
           font-weight: 800;
-          color: #818cf8;
+          color: #10b981;
           text-transform: uppercase;
           letter-spacing: 2px;
           margin-bottom: 10px;
@@ -655,7 +672,7 @@ const MobileDevelopment = ({ setActivePage }) => {
         }
 
         .accordion-item:hover {
-          border-color: #e0e7ff;
+          border-color: #d1fae5;
           box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
 

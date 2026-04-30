@@ -20,13 +20,15 @@ import HowItWorks from './pages/HowItWorks';
 import RequestQuote from './pages/RequestQuote';
 import WebDevelopment from './pages/WebDevelopment';
 import MobileDevelopment from './pages/MobileDevelopment';
+import UIUXBranding from './pages/UIUXBranding';
+import DigitalMarketing from './pages/DigitalMarketing';
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activePage, setActivePage] = useState(() => {
     const saved = localStorage.getItem('devspectra_active_page');
-    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev'];
+    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing'];
     return validPages.includes(saved) ? saved : 'home';
   });
 
@@ -123,7 +125,7 @@ function App() {
           <div className="nav-right-section">
             <ul className="nav-menu">
               <li><a href="#" className={activePage === 'home' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActivePage('home'); }}>HOME</a></li>
-              <li className="has-dropdown">
+              <li className="has-dropdown ">
                 <a href="#">COMPANY <ChevronDown size={14} /></a>
                 <ul className="dropdown">
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>ABOUT US</a></li>
@@ -136,8 +138,8 @@ function App() {
                 <ul className="dropdown">
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); }}>WEB DEVELOPMENT</a></li>
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); }}>MOBILE APP DEVELOPMENT</a></li>
-                  <li><a href="#">UI/UX & BRANDING</a></li>
-                  <li><a href="#">DIGITAL MARKETING</a></li>
+                  <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); }}>UI/UX & BRANDING</a></li>
+                  <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); }}>DIGITAL MARKETING</a></li>
                   <li><a href="#">E-COMMERCE SOLUTIONS</a></li>
                 </ul>
               </li>
@@ -308,8 +310,10 @@ function App() {
 
       {activePage === 'how' && <HowItWorks setActivePage={setActivePage} />}
       {activePage === 'quote' && <RequestQuote />}
-      {activePage === 'web-dev' && <WebDevelopment />}
+      {activePage === 'web-dev' && <WebDevelopment setActivePage={setActivePage} />}
       {activePage === 'mobile-dev' && <MobileDevelopment setActivePage={setActivePage} />}
+      {activePage === 'uiux' && <UIUXBranding setActivePage={setActivePage} />}
+      {activePage === 'marketing' && <DigitalMarketing setActivePage={setActivePage} />}
 
 
       {/* Footer */}
@@ -346,8 +350,8 @@ function App() {
             <ul>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); }}>Web Development</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); }}>Mobile App Development</a></li>
-              <li><a href="#">UI/UX Branding</a></li>
-              <li><a href="#">Digital Marketing</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); }}>UI/UX Branding</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); }}>Digital Marketing</a></li>
               <li><a href="#">E-Commerce Solutions</a></li>
             </ul>
           </div>
@@ -402,6 +406,8 @@ function App() {
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); toggleMobileMenu(); }}>HOW IT WORKS</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); toggleMobileMenu(); }}>WEB DEVELOPMENT</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); toggleMobileMenu(); }}>MOBILE APP DEVELOPMENT</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); toggleMobileMenu(); }}>UI/UX & BRANDING</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); toggleMobileMenu(); }}>DIGITAL MARKETING</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); toggleMobileMenu(); }}>REQUEST A QUOTE</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); toggleMobileMenu(); }}>CONTACT US</a></li>
             </ul>
@@ -442,9 +448,9 @@ function App() {
 
       <style>{`
         :root {
-          --primary-purple: #5e5ce6;
-          --accent-orange: #f97316;
-          --dark-blue: #0b132b;
+          --primary-emerald: #10b981;
+          --accent-orange: #f59e0b;
+          --dark-obsidian: #020617;
           --text-muted: #64748b;
         }
 
@@ -496,7 +502,7 @@ function App() {
         }
 
         .top-bar {
-          background: #15304bff;
+          background: var(--dark-obsidian);
           color: white;
           padding: 0;
           font-size: 13px;
@@ -549,11 +555,11 @@ function App() {
 
         .main-nav {
           background:  #dae4e5ff;
-
           box-shadow: 0 2px 10px rgba(0,0,0,0.05);
           position: sticky;
           top: 0;
           z-index: 100;
+          margin-bottom: 0 !important;
         }
 
         .nav-container {
@@ -575,7 +581,7 @@ function App() {
         }
 
         .main-logo-img {
-          height: 100px;
+          height: 70px;
           width: auto;
           object-fit: contain;
         }
@@ -649,7 +655,7 @@ function App() {
         .nav-utils {
           display: flex;
           gap: 20px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
         }
 
         .menu-trigger {
@@ -662,7 +668,7 @@ function App() {
         }
 
         .hero-banner {
-          background: linear-gradient(135deg, #0b132b 0%, #3a0ca3 100%, #5e5ce6 100%);
+          background: linear-gradient(135deg, #020617 0%, #064e3b 100%, #10b981 100%);
           position: relative;
           min-height: 550px;
           padding: 100px 0;
@@ -672,7 +678,7 @@ function App() {
 
         .hero-container {
           display: grid;
-          background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+          background: linear-gradient(135deg, #020617 0%, #064e3b 100%);
           height: calc(100vh - 120px);
           min-height: 750px;
           display: flex;
@@ -691,20 +697,20 @@ function App() {
 
         .hero-badge {
           display: inline-block;
-          background: rgba(94, 92, 230, 0.15);
-          color: #5e5ce6;
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
           padding: 8px 16px;
           border-radius: 50px;
           font-size: 12px;
           font-weight: 800;
           letter-spacing: 2px;
           margin-bottom: 25px;
-          border: 1px solid rgba(94, 92, 230, 0.3);
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .accent-text-glow {
-          color: #5e5ce6;
-          text-shadow: 0 0 20px rgba(94, 92, 230, 0.4);
+          color: #10b981;
+          text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
         .hero-text h1 {
@@ -743,13 +749,13 @@ function App() {
         .hero-features li .dot {
           width: 8px;
           height: 8px;
-          background: #5e5ce6;
+          background: #10b981;
           border-radius: 50%;
-          box-shadow: 0 0 10px rgba(94, 92, 230, 0.5);
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .discover-btn-premium {
-          background: linear-gradient(90deg, #5e5ce6, #7c3aed);
+          background: linear-gradient(90deg, #10b981, #059669);
           color: white;
           border: none;
           padding: 18px 40px;
@@ -758,12 +764,12 @@ function App() {
           font-size: 14px;
           letter-spacing: 1px;
           cursor: pointer;
-          box-shadow: 0 10px 30px rgba(94, 92, 230, 0.3);
+          box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
           transition: all 0.3s ease;
         }
 
         .discover-btn-premium:hover {
-          box-shadow: 0 15px 40px rgba(94, 92, 230, 0.5);
+          box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
           transform: translateY(-3px);
         }
 
@@ -798,14 +804,14 @@ function App() {
           box-shadow: 0 20px 40px rgba(0,0,0,0.1);
           display: flex;
           flex-direction: column;
-          color: #0b132b;
+          color: #020617;
         }
 
         .logo-text {
           font-size: 35px;
           font-weight: 800;
           letter-spacing: -1px;
-          background: linear-gradient(to right, #5e5ce6, #f59e0b);
+          background: linear-gradient(to right, #10b981, #f59e0b);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           display: inline-block;
@@ -815,7 +821,7 @@ function App() {
           font-size: 26px;
           font-weight: 800;
           letter-spacing: -1px;
-          background: linear-gradient(to right, #5e5ce6, #f59e0b);
+          background: linear-gradient(to right, #10b981, #f59e0b);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           display: inline-block;
@@ -824,7 +830,7 @@ function App() {
         .stat-num {
           font-size: 28px;
           font-weight: 800;
-          color: #5e5ce6;
+          color: #10b981;
         }
 
         .stat-desc {
@@ -863,7 +869,7 @@ function App() {
 
         .section-header-centered h2 {
           font-size: 36px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
           margin-bottom: 20px;
         }
 
@@ -884,7 +890,7 @@ function App() {
 
         .service-item-new:hover {
           transform: translateY(-10px);
-          border-color: var(--primary-purple);
+          border-color: var(--primary-emerald);
         }
 
         .service-icon-box {
@@ -895,7 +901,7 @@ function App() {
         .service-text h3 {
           font-size: 20px;
           margin-bottom: 15px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
         }
 
         .service-text p {
@@ -919,7 +925,7 @@ function App() {
         .solutions-text h2 {
           font-size: 36px;
           margin-bottom: 25px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
         }
 
         .solutions-text p {
@@ -938,11 +944,11 @@ function App() {
           align-items: center;
           gap: 10px;
           font-weight: 600;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
         }
 
         .check-icon {
-          color: var(--primary-purple);
+          color: var(--primary-emerald);
         }
 
         .solutions-image img {
@@ -969,7 +975,7 @@ function App() {
         }
 
         .sub-heading-new {
-          color: var(--primary-purple);
+          color: var(--primary-emerald);
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 2px;
@@ -981,7 +987,7 @@ function App() {
         .audit-text h2 {
           font-size: 36px;
           margin-bottom: 25px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
         }
 
         .analyze-btn {
@@ -1043,7 +1049,7 @@ function App() {
         }
 
         .close-sidebar-btn-round:hover {
-          background: #f5f5f5;
+          background: #10b981;
           transform: rotate(90deg);
         }
 
@@ -1075,7 +1081,7 @@ function App() {
           gap: 15px;
           margin-bottom: 15px;
           font-size: 14px;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
           line-height: 1.6;
         }
 
@@ -1105,7 +1111,7 @@ function App() {
 
         .mobile-nav-list li a {
           text-decoration: none;
-          color: var(--dark-blue);
+          color: var(--dark-obsidian);
           font-weight: 700;
           font-size: 16px;
           display: block;

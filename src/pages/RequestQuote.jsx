@@ -45,7 +45,7 @@ const RequestQuote = () => {
           }
           .success-card h2 {
             font-size: 36px;
-            color: #0b132b;
+            color: #020617;
             margin: 25px 0 15px;
           }
           .success-card p {
@@ -54,7 +54,7 @@ const RequestQuote = () => {
             margin-bottom: 40px;
           }
           .back-home-btn {
-            background: #5e5ce6;
+            background: #10b981;
             color: white;
             border: none;
             padding: 15px 40px;
@@ -64,7 +64,7 @@ const RequestQuote = () => {
             transition: all 0.3s ease;
           }
           .back-home-btn:hover {
-            background: #3a0ca3;
+            background: #059669;
             transform: translateY(-3px);
           }
         `}</style>
@@ -190,8 +190,8 @@ const RequestQuote = () => {
 
       <style>{`
         .quote-hero {
-          background-color: #0b132b;
-          background-image: linear-gradient(rgba(9, 11, 19, 0.85), rgba(43, 52, 79, 0.85)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200');
+          background-color: #020617;
+          background-image: linear-gradient(rgba(2, 6, 23, 0.85), rgba(6, 78, 59, 0.85)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200');
           background-size: cover;
           background-position: center;
           background-attachment: fixed;
@@ -222,7 +222,7 @@ const RequestQuote = () => {
         }
         .quote-info h2 {
           font-size: 32px;
-          color: #0b132b;
+          color: #020617;
           margin-bottom: 40px;
         }
         .benefit-list {
@@ -236,12 +236,12 @@ const RequestQuote = () => {
           gap: 20px;
         }
         .b-icon {
-          color: #2ecc71;
+          color: #10b981;
           margin-top: 3px;
         }
         .benefit-item h4 {
           font-size: 20px;
-          color: #0b132b;
+          color: #020617;
           margin-bottom: 8px;
         }
         .benefit-item p {
@@ -250,14 +250,14 @@ const RequestQuote = () => {
         }
         .quote-contact-info h3 {
           font-size: 22px;
-          color: #0b132b;
+          color: #020617;
           margin-bottom: 20px;
         }
         .quote-contact-info p {
           display: flex;
           align-items: center;
           gap: 10px;
-          color: #5e5ce6;
+          color: #059669;
           font-weight: 600;
           margin-bottom: 15px;
         }
@@ -281,7 +281,7 @@ const RequestQuote = () => {
         }
         .input-group label {
           font-weight: 700;
-          color: #0b132b;
+          color: #020617;
           font-size: 14px;
           display: flex;
           align-items: center;
@@ -296,14 +296,14 @@ const RequestQuote = () => {
           background: #f8fafc;
         }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-          border-color: #5e5ce6;
+          border-color: #059669;
           background: white;
-          box-shadow: 0 0 0 4px rgba(94, 92, 230, 0.1);
+          box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
           outline: none;
         }
         .submit-quote-btn {
           width: 100%;
-          background: #5e5ce6;
+          background: #10b981;
           color: white;
           border: none;
           padding: 18px;
@@ -319,9 +319,9 @@ const RequestQuote = () => {
           margin-top: 10px;
         }
         .submit-quote-btn:hover {
-          background: #3a0ca3;
+          background: #059669;
           transform: translateY(-3px);
-          box-shadow: 0 15px 30px rgba(94, 92, 230, 0.3);
+          box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
         }
         @media (max-width: 992px) {
           .quote-grid { grid-template-columns: 1fr; }

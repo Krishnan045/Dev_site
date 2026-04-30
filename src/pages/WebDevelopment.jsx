@@ -37,7 +37,7 @@ import {
   Quote,
   HelpCircle
 } from 'lucide-react';
-import webDevImg from 'C:/Users/KRISHNAKUMAR P/.gemini/antigravity/brain/eae43536-d91e-452e-84bb-dc649d8dfc83/web_dev_professional_hero_1777538848233.png';
+import webDevImg from '../images/web_hero.png';
 
 const WebDevelopment = ({ setActivePage }) => {
   const fadeInUp = {

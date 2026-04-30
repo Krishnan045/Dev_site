@@ -31,7 +31,7 @@ import {
   UploadCloud,
   HeartHandshake
 } from 'lucide-react';
-import mobileDevImg from 'C:/Users/KRISHNAKUMAR P/.gemini/antigravity/brain/eae43536-d91e-452e-84bb-dc649d8dfc83/mobile_hero_indigo_themed_1777539635317.png';
+import mobileDevImg from '../images/mobile_hero.png';
 
 const MobileDevelopment = ({ setActivePage }) => {
   const [activeAccordion, setActiveAccordion] = useState(null);

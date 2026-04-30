@@ -22,7 +22,7 @@ import {
   BarChart,
   ChevronDown
 } from 'lucide-react';
-import digitalImg from 'C:/Users/KRISHNAKUMAR P/.gemini/antigravity/brain/eae43536-d91e-452e-84bb-dc649d8dfc83/marketing_hero_teal_themed_1777540496613.png';
+import digitalImg from '../images/marketing_hero.png';
 
 const Counter = ({ value, suffix = "", duration = 2 }) => {
   const [count, setCount] = useState(0);

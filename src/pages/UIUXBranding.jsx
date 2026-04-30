@@ -14,7 +14,7 @@ import {
   Users,
   Compass
 } from 'lucide-react';
-import uiuxImg from 'C:/Users/KRISHNAKUMAR P/.gemini/antigravity/brain/eae43536-d91e-452e-84bb-dc649d8dfc83/uiux_hero_amber_themed_1777539665523.png';
+import uiuxImg from '../images/uiux_hero.png';
 
 const UIUXBranding = ({ setActivePage }) => {
   useEffect(() => {

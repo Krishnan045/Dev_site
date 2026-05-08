@@ -27,6 +27,8 @@ import Contact from './pages/Contact';
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileCompanyOpen, setMobileCompanyOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activePage, setActivePage] = useState(() => {
     const saved = localStorage.getItem('devspectra_active_page');
@@ -402,6 +404,42 @@ function App() {
         </div>
 
         <div className="sidebar-body">
+          <div className="sidebar-nav-section">
+            <h3>NAVIGATION</h3>
+            <ul className="mobile-nav-list">
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('home'); }}>HOME</a></li>
+              
+              <li className="mobile-dropdown-item">
+                <div className="mobile-dropdown-trigger" onClick={() => setMobileCompanyOpen(!mobileCompanyOpen)}>
+                  COMPANY <ChevronDown size={14} style={{ transform: mobileCompanyOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }} />
+                </div>
+                {mobileCompanyOpen && (
+                  <ul className="mobile-sub-menu">
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>ABOUT US</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); }}>HOW IT WORKS</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); }}>REQUEST A QUOTE</a></li>
+                  </ul>
+                )}
+              </li>
+
+              <li className="mobile-dropdown-item">
+                <div className="mobile-dropdown-trigger" onClick={() => setMobileServicesOpen(!mobileServicesOpen)}>
+                  SERVICES <ChevronDown size={14} style={{ transform: mobileServicesOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.3s' }} />
+                </div>
+                {mobileServicesOpen && (
+                  <ul className="mobile-sub-menu">
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); }}>WEB DEVELOPMENT</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); }}>MOBILE APP DEVELOPMENT</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); }}>UI/UX & BRANDING</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); }}>DIGITAL MARKETING</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('ecommerce'); }}>E-COMMERCE SOLUTIONS</a></li>
+                  </ul>
+                )}
+              </li>
+
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('contact'); }}>CONTACT US</a></li>
+            </ul>
+          </div>
 
           <div className="sidebar-nav-section">
             <h3>HEAD OFFICE – INDIA</h3>
@@ -1003,12 +1041,12 @@ function App() {
           top: 0;
           right: -100%;
           width: 85%;
-          max-width: 320px;
+          max-width: 420px;
           height: 100vh;
           background: white;
           z-index: 1000;
           transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-          padding: 40px;
+          padding: 20px 25px;
           box-shadow: -10px 0 30px rgba(0,0,0,0.1);
           overflow-y: auto;
         }
@@ -1073,6 +1111,41 @@ function App() {
           font-size: 14px;
           color: var(--dark-obsidian);
           line-height: 1.6;
+        }
+        .mobile-dropdown-trigger {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 0;
+          font-weight: 800;
+          font-size: 16px;
+          color: var(--dark-obsidian);
+          cursor: pointer;
+          border-bottom: 1px solid #f1f5f9;
+          text-transform: uppercase;
+        }
+
+        .mobile-sub-menu {
+          list-style: none;
+          padding: 5px 20px;
+          background: #f8fafc;
+          border-left: 3px solid var(--accent-orange);
+          margin-top: 5px;
+          margin-bottom: 10px;
+        }
+
+        .mobile-sub-menu li a {
+          font-size: 13.5px !important;
+          font-weight: 700 !important;
+          color: #1e293b !important;
+          padding: 12px 0 !important;
+          display: block !important;
+          text-decoration: none !important;
+          white-space: nowrap !important;
+        }
+
+        .mobile-sub-menu li a:hover {
+          color: var(--accent-orange) !important;
         }
 
         .sidebar-socials {

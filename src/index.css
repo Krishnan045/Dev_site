@@ -25,6 +25,26 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
+}
+
+/* Custom Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+  border: 3px solid #f8fafc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 h1,
@@ -49,7 +69,7 @@ h4 {
 
 .reveal {
   opacity: 0;
-  transition: all 1.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
   pointer-events: none;
 }
 
@@ -2751,7 +2771,8 @@ h4 {
   .service-hero-v2 .container {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 40px;
+    gap: 50px;
+    padding-top: 40px;
   }
 
   .hero-content-v2 {
@@ -2759,10 +2780,29 @@ h4 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    order: 1;
+  }
+
+  .hero-visual-v2 {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero-main-img-v2 {
+    max-height: 480px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .hero-cta-group {
     justify-content: center;
+    width: 100%;
+    gap: 15px;
   }
 }
 

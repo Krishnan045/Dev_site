@@ -85,9 +85,8 @@ function App() {
     return () => observer.disconnect();
   }, [activePage]); // Re-run when activePage changes to observe new elements
 
-  // Scroll to top on page change
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsMobileMenuOpen(false); // Close mobile menu on navigate
   }, [activePage]);
 

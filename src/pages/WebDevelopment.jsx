@@ -423,40 +423,10 @@ const WebDevelopment = ({ setActivePage }) => {
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="final-cta-premium">
-        <div className="container cta-flex-row">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="cta-left"
-          >
-            <div className="cta-icon-box">
-              <Rocket size={36} className="text-white" />
-              <div className="cta-pulse-bg"></div>
-            </div>
-            <div className="cta-text">
-              <h2>Start Your Project Today</h2>
-              <p>Have a project in mind? Let's build something amazing together.</p>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="cta-right-btns"
-          >
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-contact-premium">Contact Us</motion.button>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-quote-premium">Get a Quote</motion.button>
-          </motion.div>
-        </div>
-      </section>
 
       <style>{`
         .web-dev-premium {
           background: #ffffff;
-          overflow-x: hidden;
           font-family: 'Inter', sans-serif;
         }
 
@@ -734,8 +704,8 @@ const WebDevelopment = ({ setActivePage }) => {
         .final-cta-premium { padding: 100px 0; background: #020617; color: white; position: relative; overflow: hidden; }
         .cta-flex-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .cta-left { display: flex; align-items: center; gap: 35px; }
-        .cta-icon-box { width: 90px; height: 90px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 30px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .cta-pulse-bg { position: absolute; inset: -15px; background: #10b981; border-radius: inherit; opacity: 0.2; animation: pulse-cta 2s infinite; }
+        .cta-icon-box { display: flex; align-items: center; justify-content: center; position: relative; color: #10b981; }
+        .cta-pulse-bg { display: none; }
         @keyframes pulse-cta { 0% { scale: 1; opacity: 0.2; } 100% { scale: 1.3; opacity: 0; } }
         .cta-text h2 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 10px; font-weight: 900; letter-spacing: -1px; }
         .cta-text p { opacity: 0.7; font-size: 18px; margin: 0; font-weight: 500; }

@@ -329,7 +329,7 @@ const UIUXBranding = ({ setActivePage }) => {
         <div className="container reveal zoom-in">
           <h2>Ready to <span className="text-gradient-purple">Elevate</span> Your Digital Identity?</h2>
           <p>Let's collaborate to build something truly remarkable that resonates with your audience.</p>
-          <button className="btn-primary-glow">Start Your Design Journey</button>
+          <button className="btn-primary-glow" onClick={() => setActivePage('quote')}>Start Your Design Journey</button>
         </div>
       </section>
     </div>

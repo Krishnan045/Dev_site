@@ -33,9 +33,9 @@ import {
   Terminal,
   AppWindow,
   Server,
-  Star,
   Quote,
-  HelpCircle
+  HelpCircle,
+  ShoppingBag
 } from 'lucide-react';
 import ecommerceHeroImg from '../images/image copy 2.png';
 
@@ -229,11 +229,15 @@ const EcommerceSolutions = ({ setActivePage }) => {
                   </motion.div>
                 ))}
               </div>
-              <div className="custom-build-cta" style={{ marginTop: '40px' }}>
+              <motion.div 
+                className="custom-build-cta"
+                whileHover={{ x: 10 }}
+              >
+                <div className="custom-tag-badge">Bespoke</div>
                 <h4>Need a Custom Solution?</h4>
-                <p>We build bespoke e-commerce engines from the ground up for unique business models.</p>
+                <p>We build high-performance e-commerce engines from the ground up, tailored specifically for your unique business logic and complex scaling requirements.</p>
                 <button className="quote-btn-mini" onClick={() => setActivePage('quote')}>Request Scoping</button>
-              </div>
+              </motion.div>
             </motion.div>
 
             <motion.div
@@ -389,40 +393,10 @@ const EcommerceSolutions = ({ setActivePage }) => {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="final-cta-premium">
-        <div className="container cta-flex-row">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="cta-left"
-          >
-            <div className="cta-icon-box">
-              <Store size={36} className="text-white" />
-              <div className="cta-pulse-bg"></div>
-            </div>
-            <div className="cta-text">
-              <h2>Launch Your Online Store</h2>
-              <p>Ready to dominate the digital marketplace? Let's build your success together.</p>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="cta-right-btns"
-          >
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-contact-premium" onClick={() => setActivePage('contact')}>Contact Us</motion.button>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-quote-premium" onClick={() => setActivePage('quote')}>Get a Quote</motion.button>
-          </motion.div>
-        </div>
-      </section>
 
       <style>{`
         .ecommerce-solutions-page {
           background: #ffffff;
-          overflow-x: hidden;
           font-family: 'Inter', sans-serif;
         }
 
@@ -632,6 +606,49 @@ const EcommerceSolutions = ({ setActivePage }) => {
         .node-content-box h4 { font-size: 19px; margin-bottom: 8px; font-weight: 800; color: #1e293b; }
         .node-content-box p { font-size: 14.5px; color: #64748b; margin: 0; line-height: 1.6; }
 
+        .custom-build-cta { 
+          margin-top: 50px; 
+          padding: 35px; 
+          background: #f8fafc; 
+          border-radius: 24px; 
+          border: 1px solid #e2e8f0; 
+          position: relative;
+          overflow: hidden;
+          transition: 0.4s;
+        }
+        .custom-build-cta:hover {
+          background: #ffffff;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+          border-color: #10b981;
+          transform: translateY(-5px);
+        }
+        .custom-build-cta h4 { 
+          font-size: 22px; 
+          font-weight: 900; 
+          color: #1e293b; 
+          margin-bottom: 12px; 
+          letter-spacing: -0.5px;
+        }
+        .custom-build-cta p { 
+          font-size: 15px; 
+          color: #64748b; 
+          margin-bottom: 25px; 
+          line-height: 1.7;
+          max-width: 90%;
+        }
+        .custom-tag-badge {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: #10b98115;
+          color: #10b981;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+        }
+
         .features-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 30px; }
         .feature-item-box { text-align: center; background: #ffffff; padding: 40px 20px; border-radius: 30px; transition: 0.3s; }
         .f-icon-circle { width: 80px; height: 80px; background: #ffffff; border-radius: 24px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.04); }
@@ -669,8 +686,8 @@ const EcommerceSolutions = ({ setActivePage }) => {
         .final-cta-premium { padding: 60px 0 20px; background: #020617; color: white; position: relative; overflow: hidden; margin-bottom: -15px; border: none !important; z-index: 10; }
         .cta-flex-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         .cta-left { display: flex; align-items: center; gap: 35px; }
-        .cta-icon-box { width: 90px; height: 90px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 30px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .cta-pulse-bg { position: absolute; inset: -15px; background: #10b981; border-radius: inherit; opacity: 0.2; animation: pulse-cta 2s infinite; }
+        .cta-icon-box { display: flex; align-items: center; justify-content: center; position: relative; color: #10b981; }
+        .cta-pulse-bg { display: none; }
         @keyframes pulse-cta { 0% { scale: 1; opacity: 0.2; } 100% { scale: 1.3; opacity: 0; } }
         .cta-text h2 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 10px; font-weight: 900; letter-spacing: -1px; }
         .cta-text p { opacity: 0.7; font-size: 18px; margin: 0; font-weight: 500; }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, User, Mail, Phone, Building, MessageSquare, CheckCircle } from 'lucide-react';
+import { Send, User, Mail, Phone, Building, MessageSquare, CheckCircle, Monitor } from 'lucide-react';
 
 const RequestQuote = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -162,16 +162,31 @@ const RequestQuote = () => {
                   </div>
                 </div>
 
-                <div className="input-group">
-                  <label>Subject</label>
-                  <select required>
-                    <option value="">Select a Service</option>
-                    <option value="web">Web Development</option>
-                    <option value="mobile">Mobile App Development</option>
-                    <option value="uiux">UI/UX & Branding</option>
-                    <option value="marketing">Digital Marketing</option>
-                    <option value="ecommerce">E-Commerce Solutions</option>
-                  </select>
+                <div className="form-group-grid">
+                  <div className="input-group">
+                    <label>Subject</label>
+                    <select required>
+                      <option value="">Select a Service</option>
+                      <option value="web">Web Development</option>
+                      <option value="mobile">Mobile App Development</option>
+                      <option value="uiux">UI/UX & Branding</option>
+                      <option value="marketing">Digital Marketing</option>
+                      <option value="ecommerce">E-Commerce Solutions</option>
+                    </select>
+                  </div>
+                  <div className="input-group">
+                    <label><Monitor size={14} /> Website Type</label>
+                    <select required>
+                      <option value="">Select Website Type</option>
+                      <option value="business">Business Website</option>
+                      <option value="ecommerce">E-commerce Store</option>
+                      <option value="portfolio">Portfolio Website</option>
+                      <option value="blog">Blog / News Portal</option>
+                      <option value="landing">Landing Page</option>
+                      <option value="custom">Custom Web Application</option>
+                      <option value="saas">SaaS Platform</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="input-group">

@@ -22,13 +22,15 @@ import WebDevelopment from './pages/WebDevelopment';
 import MobileDevelopment from './pages/MobileDevelopment';
 import UIUXBranding from './pages/UIUXBranding';
 import DigitalMarketing from './pages/DigitalMarketing';
+import EcommerceSolutions from './pages/EcommerceSolutions';
+import Contact from './pages/Contact';
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activePage, setActivePage] = useState(() => {
     const saved = localStorage.getItem('devspectra_active_page');
-    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing'];
+    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing', 'ecommerce', 'contact'];
     return validPages.includes(saved) ? saved : 'home';
   });
 
@@ -140,10 +142,10 @@ function App() {
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); }}>MOBILE APP DEVELOPMENT</a></li>
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); }}>UI/UX & BRANDING</a></li>
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); }}>DIGITAL MARKETING</a></li>
-                  <li><a href="#">E-COMMERCE SOLUTIONS</a></li>
+                  <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('ecommerce'); }}>E-COMMERCE SOLUTIONS</a></li>
                 </ul>
               </li>
-              <li><a href="#">CONTACT US</a></li>
+              <li><a href="#" className={activePage === 'contact' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActivePage('contact'); }}>CONTACT US</a></li>
             </ul>
 
             <div className="nav-utils">
@@ -314,6 +316,8 @@ function App() {
       {activePage === 'mobile-dev' && <MobileDevelopment setActivePage={setActivePage} />}
       {activePage === 'uiux' && <UIUXBranding setActivePage={setActivePage} />}
       {activePage === 'marketing' && <DigitalMarketing setActivePage={setActivePage} />}
+      {activePage === 'ecommerce' && <EcommerceSolutions setActivePage={setActivePage} />}
+      {activePage === 'contact' && <Contact />}
 
 
       {/* Footer */}
@@ -341,7 +345,7 @@ function App() {
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>About US</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); }}>How it Works</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); }}>Request a Quote</a></li>
-              <li><a href="#">Contact Us</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('contact'); }}>Contact Us</a></li>
             </ul>
           </div>
 
@@ -352,7 +356,7 @@ function App() {
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); }}>Mobile App Development</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); }}>UI/UX Branding</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); }}>Digital Marketing</a></li>
-              <li><a href="#">E-Commerce Solutions</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('ecommerce'); }}>E-Commerce Solutions</a></li>
             </ul>
           </div>
 
@@ -398,20 +402,6 @@ function App() {
         </div>
 
         <div className="sidebar-body">
-          <div className="sidebar-nav-section">
-            <h3>NAVIGATION</h3>
-            <ul className="mobile-nav-list">
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('home'); toggleMobileMenu(); }}>HOME</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); toggleMobileMenu(); }}>ABOUT US</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); toggleMobileMenu(); }}>HOW IT WORKS</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('web-dev'); toggleMobileMenu(); }}>WEB DEVELOPMENT</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('mobile-dev'); toggleMobileMenu(); }}>MOBILE APP DEVELOPMENT</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('uiux'); toggleMobileMenu(); }}>UI/UX & BRANDING</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('marketing'); toggleMobileMenu(); }}>DIGITAL MARKETING</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); toggleMobileMenu(); }}>REQUEST A QUOTE</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); toggleMobileMenu(); }}>CONTACT US</a></li>
-            </ul>
-          </div>
 
           <div className="sidebar-nav-section">
             <h3>HEAD OFFICE – INDIA</h3>
@@ -1129,7 +1119,7 @@ function App() {
           .hero-content { grid-template-columns: 1fr; text-align: center; }
           .hero-text p { margin: 0 auto 35px; }
           .hero-features { justify-content: center; }
-          .hero-image-premium { display: none; }
+           .hero-image-premium-container { display: block !important; margin: 40px auto 0 !important; max-width: 90%; }
           .footer-grid { grid-template-columns: 1fr 1fr; }
         }
 

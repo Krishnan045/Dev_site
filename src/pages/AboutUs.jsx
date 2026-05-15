@@ -1,9 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Target, Eye, Award, Users, Zap, ShieldCheck, ChevronRight } from 'lucide-react';
 
 const AboutUs = () => {
+  const [dynamicPortfolios, setDynamicPortfolios] = useState([]);
+  const [dynamicStories, setDynamicStories] = useState([]);
+
+  const defaultStories = [
+    { client: "GlobalLogistics", result: "300% Growth", story: "We optimized their entire supply chain with a custom-built ERP system, resulting in a 40% reduction in operational overhead within 6 months and a massive increase in delivery throughput." },
+    { client: "EcoRetail", result: "2.4M Users", story: "DevSpectra architected a high-traffic e-commerce ecosystem that maintained 99.99% uptime during their largest global sale event, handling 50k concurrent transactions per second." },
+    { client: "HealthTech Inc", result: "90% Efficiency", story: "Implemented an AI-driven patient management system that reduced appointment scheduling friction by 90% and improved data security compliance to global standards." },
+    { client: "FinBank Global", result: "Zero Security Breaches", story: "Secured their mobile banking infrastructure with multi-layered encryption and biometric authentication, protecting over $500M in daily transaction volume." }
+  ];
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [pRes, sRes] = await Promise.all([
+          fetch('/api/public/portfolios').then(res => res.json()),
+          fetch('/api/public/stories').then(res => res.json())
+        ]);
+        setDynamicPortfolios(Array.isArray(pRes) ? pRes : []);
+        setDynamicStories(Array.isArray(sRes) ? sRes : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchData();
+
     const scrollTarget = sessionStorage.getItem('scrollTarget');
     if (scrollTarget === 'portfolio') {
       sessionStorage.removeItem('scrollTarget');
@@ -179,91 +203,6 @@ const AboutUs = () => {
                 <div className="process-number">{step.num}</div>
                 <h3>{step.title}</h3>
                 <p>{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Portfolio Highlight */}
-      <section id="portfolio-section" className="about-portfolio reveal fade-up">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-            className="section-header-centered"
-          >
-            <span className="premium-tag">OUR CRAFT</span>
-            <h2>Global <span className="text-gradient-emerald">Portfolio</span></h2>
-            <p>Showcasing the digital masterpieces we've built for industry leaders across the globe.</p>
-          </motion.div>
-          <div className="about-portfolio-grid">
-            {[
-              { title: "Furniture Store", cat: "E-commerce", desc: "Modern e-commerce website with shopping cart and payment gateway.", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800" },
-              { title: "Analytics Dashboard", cat: "Web Application", desc: "Real-time analytics dashboard for business insights and reports.", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" },
-              { title: "Corporate Website", cat: "Business", desc: "Professional business website with modern design and animations.", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800" },
-              { title: "Restaurant Website", cat: "Business", desc: "Restaurant website with online menu and table reservation.", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800" }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -100 : 100, scale: 0.8 }}
-                whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ 
-                  duration: 1.2, 
-                  delay: (i % 4) * 0.15,
-                  ease: [0.22, 1, 0.36, 1] 
-                }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="about-portfolio-card"
-              >
-                <div className="portfolio-img-box">
-                  <img src={item.img} alt={item.title} />
-                  <span className="portfolio-badge">{item.cat}</span>
-                </div>
-                <div className="portfolio-content">
-                  <h3>{item.title}</h3>
-                  <p>{item.desc}</p>
-                  <div className="view-project-link">
-                    View Project <ChevronRight size={18} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Success Stories Section */}
-      <section className="about-success reveal fade-up">
-        <div className="container">
-          <div className="section-header-centered">
-            <span className="premium-tag">IMPACT</span>
-            <h2>Success <span className="text-gradient-emerald">Stories</span></h2>
-            <p>Measuring our success by the tangible growth and efficiency of our global partners.</p>
-          </div>
-          <div className="success-stories-grid">
-            {[
-              { client: "GlobalLogistics", result: "300% Growth", story: "We optimized their entire supply chain with a custom-built ERP system, resulting in a 40% reduction in operational overhead within 6 months and a massive increase in delivery throughput." },
-              { client: "EcoRetail", result: "2.4M Users", story: "DevSpectra architected a high-traffic e-commerce ecosystem that maintained 99.99% uptime during their largest global sale event, handling 50k concurrent transactions per second." },
-              { client: "HealthTech Inc", result: "90% Efficiency", story: "Implemented an AI-driven patient management system that reduced appointment scheduling friction by 90% and improved data security compliance to global standards." },
-              { client: "FinBank Global", result: "Zero Security Breaches", story: "Secured their mobile banking infrastructure with multi-layered encryption and biometric authentication, protecting over $500M in daily transaction volume." }
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1 }}
-                viewport={{ once: true }}
-                className="success-story-card"
-              >
-                <div className="success-header">
-                  <h3>{s.client}</h3>
-                  <span className="success-stat">{s.result}</span>
-                </div>
-                <p>{s.story}</p>
-                <div className="success-accent"></div>
               </motion.div>
             ))}
           </div>
@@ -453,7 +392,19 @@ const AboutUs = () => {
         /* Portfolio Styling */
         .about-portfolio { padding: 120px 0; background: #f8fafc; text-align: center; }
         .about-portfolio h2 { font-size: 42px; font-weight: 800; margin: 15px 0 25px; color: #020617; }
-        .about-portfolio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 60px; }
+        .about-portfolio-grid { 
+          display: flex;
+          gap: 25px; 
+          margin-top: 60px; 
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-behavior: smooth;
+          padding-bottom: 20px;
+        }
+        .about-portfolio-card {
+          flex: 0 0 calc(25% - 18.75px);
+          scroll-snap-align: start;
+        }
         .about-portfolio-card { background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.05); text-align: left; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
         .about-portfolio-card:hover { transform: translateY(-15px); box-shadow: 0 30px 60px rgba(16, 185, 129, 0.15); }
         .portfolio-img-box { position: relative; width: 100%; aspect-ratio: 16/11; overflow: hidden; }
@@ -512,9 +463,17 @@ const AboutUs = () => {
           line-height: 1.8;
         }
         @media (max-width: 992px) {
-          .story-grid, .vm-grid, .about-process-grid, .about-portfolio-grid, .success-stories-grid { grid-template-columns: 1fr; }
+          .about-portfolio-card {
+            flex: 0 0 calc(50% - 12.5px);
+          }
+          .story-grid, .vm-grid, .about-process-grid, .success-stories-grid { grid-template-columns: 1fr; }
           .stats-grid, .values-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
           .about-hero-content h1 { font-size: 40px; }
+        }
+        @media (max-width: 768px) {
+          .about-portfolio-card {
+            flex: 0 0 100%;
+          }
         }
         @media (max-width: 576px) {
           .stats-grid, .values-grid { grid-template-columns: 1fr; }

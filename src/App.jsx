@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Facebook,
-  Twitter,
   Linkedin,
   Mail,
   Phone,
@@ -12,9 +11,12 @@ import {
   Instagram,
   Youtube,
   MessageCircle,
-  MapPin
+  MessageSquare,
+  MapPin,
+  Info
 } from 'lucide-react';
 import logo from './images/download.png';
+import AdminPortal from './AdminPortal';
 import AboutUs from './pages/AboutUs';
 import HowItWorks from './pages/HowItWorks';
 import RequestQuote from './pages/RequestQuote';
@@ -23,6 +25,7 @@ import MobileDevelopment from './pages/MobileDevelopment';
 import UIUXBranding from './pages/UIUXBranding';
 import DigitalMarketing from './pages/DigitalMarketing';
 import EcommerceSolutions from './pages/EcommerceSolutions';
+import SuccessStories from './pages/SuccessStories';
 import Contact from './pages/Contact';
 
 function App() {
@@ -30,29 +33,81 @@ function App() {
   const [mobileCompanyOpen, setMobileCompanyOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [activePage, setActivePage] = useState(() => {
+  const [solutionSlide, setSolutionSlide] = useState(0);
+  const getInitialPage = () => {
+    const hash = window.location.hash.replace('#/', '').replace('#', '');
+    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing', 'ecommerce', 'stories', 'contact', 'admin'];
+    
+    if (validPages.includes(hash)) return hash;
+    
     const saved = localStorage.getItem('devspectra_active_page');
-    const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing', 'ecommerce', 'contact'];
     return validPages.includes(saved) ? saved : 'home';
-  });
+  };
+
+  const [activePage, setActivePage] = useState(getInitialPage());
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Diagnostic logging
   useEffect(() => {
     console.log("App mounted. Active page:", activePage);
   }, []);
 
-  // Save page state to local storage
+  // Save page state and update hash
   useEffect(() => {
     localStorage.setItem('devspectra_active_page', activePage);
+    if (activePage === 'home') {
+      window.history.replaceState(null, '', window.location.pathname);
+    } else {
+      window.location.hash = `/${activePage}`;
+    }
   }, [activePage]);
 
-  const slides = [
+  const [slides, setSlides] = useState([
     "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
     "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
-  ];
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800"
+  ]);
+  const [homeServices, setHomeServices] = useState([]);
+  const [portfolios, setPortfolios] = useState([]);
+  const [settings, setSettings] = useState(null);
+
+  const fetchData = useCallback(async () => {
+      try {
+        const [slidesRes, servicesRes, settingsRes, portfoliosRes] = await Promise.all([
+          fetch('/api/public/banners').then(res => res.json()),
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/settings').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+
+        if (Array.isArray(slidesRes) && slidesRes.length > 0) {
+          setSlides(slidesRes.filter(s => s.isActive !== false).map(s => s.imageUrl));
+        }
+        setHomeServices(Array.isArray(servicesRes) ? servicesRes : []);
+        setPortfolios(Array.isArray(portfoliosRes) ? portfoliosRes : []);
+        setSettings(settingsRes);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [activePage, fetchData]);
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#/', '').replace('#', '');
+      const validPages = ['home', 'about', 'how', 'quote', 'web-dev', 'mobile-dev', 'uiux', 'marketing', 'ecommerce', 'stories', 'contact', 'admin'];
+      if (validPages.includes(hash)) {
+        setActivePage(hash);
+      } else if (!hash) {
+        setActivePage('home');
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -60,7 +115,8 @@ function App() {
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
+      setSolutionSlide((prev) => (prev + 1) % 3);
+    }, 5000);
     return () => clearInterval(slideInterval);
   }, [slides.length]);
 
@@ -79,38 +135,62 @@ function App() {
       });
     }, observerOptions);
 
-    const revealElements = document.querySelectorAll('.reveal');
-    revealElements.forEach(el => observer.observe(el));
+    const observeElements = () => {
+      const revealElements = document.querySelectorAll('.reveal');
+      revealElements.forEach(el => observer.observe(el));
+    };
 
-    return () => observer.disconnect();
-  }, [activePage]); // Re-run when activePage changes to observe new elements
+    // Initial observation
+    observeElements();
+
+    // Set up MutationObserver to watch for newly added reveal elements
+    const mutationObserver = new MutationObserver((mutations) => {
+      let shouldObserve = false;
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1) { // Element node
+            if (node.classList.contains('reveal') || node.querySelector('.reveal')) {
+              shouldObserve = true;
+            }
+          }
+        });
+      });
+      if (shouldObserve) observeElements();
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [activePage]); // activePage change should trigger a re-scan, mutation observer handles the rest
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsMobileMenuOpen(false); // Close mobile menu on navigate
+    window.scrollTo(0, 0);
+    setIsMobileMenuOpen(false); 
   }, [activePage]);
+
+  // Initial scroll to top on refresh
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="app">
-      {/* Diagnostic check */}
-      <div id="mount-check" style={{ display: 'none' }}>RENDERED</div>
-      {/* Top Bar */}
-      <div className="top-bar">
-        <div className="container top-bar-content">
-          <div className="social-icons-top">
-            <Facebook size={16} />
-            <Twitter size={16} />
-            <Linkedin size={16} />
-          </div>
+      {activePage !== 'admin' && (
+        <>
+          <div className="top-bar">
+        <div className="top-bar-content-fluid">
           <div className="top-bar-right">
             <div className="contact-info-top">
               <div className="info-item">
-                <Phone size={14} />
-                <span>+91 99620 74904</span>
+                <Phone size={15} strokeWidth={2.5} />
+                <span>{settings?.contactPhone || '+91 76958 90189'}</span>
               </div>
               <div className="info-item">
-                <Mail size={14} />
-                <span>contact@devspectra.com</span>
+                <Mail size={15} strokeWidth={2.5} />
+                <span>{settings?.contactEmail || 'contact@devspectra.com'}</span>
               </div>
             </div>
 
@@ -133,6 +213,7 @@ function App() {
                 <ul className="dropdown">
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>ABOUT US</a></li>
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); }}>HOW IT WORKS</a></li>
+                  <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('stories'); }}>SUCCESS STORIES</a></li>
                   <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); }}>REQUEST A QUOTE</a></li>
                 </ul>
               </li>
@@ -160,7 +241,7 @@ function App() {
       {activePage === 'home' && (
         <>
           {/* Hero Banner */}
-          <section className="hero-banner">
+          <section className="hero-container">
             <div className="container">
               <div className="hero-content">
                 <div className="hero-text">
@@ -233,19 +314,12 @@ function App() {
               </div>
 
               <div className="services-grid-main">
-                {[
-                  { title: "Online Reputation management", desc: "It is also known as corporate reputation Management. We understand the value of online reputation.", icon: "📋" },
-                  { title: "Social Media Marketing Services", desc: "DevSpectra Social media marketing services are designed to integrate the existing campaign with your social media campaign.", icon: "📱" },
-                  { title: "Search Engine Optimization", desc: "Our strategies can help you to dominate search results. We make sure that your website ranks at the top and leads come in.", icon: "🔍" },
-                  { title: "Web and Traffic Analytics", desc: "Looking for Web Analysis for better business? Rely on us. In DevSpectra Web Analytics services we cover on web,social and mobile analytics.", icon: "📊" },
-                  { title: "Conversion Optimization Process", desc: "We have mastered the art of creating an essential set of principles that help your company to increase the sale.", icon: "📈" },
-                  { title: "Pay Per Click Management", desc: "DevSpectra Has Unmatched Portfolio of Clients & a long history of successful Pay Per Click Marketing Campaigns.", icon: "💰" }
-                ].map((s, i) => (
+                {(homeServices.length > 0 ? homeServices : []).filter(s => s.isActive !== false && s.showOnHome === true).map((s, i) => (
                   <div key={i} className="service-item-new reveal fade-up" style={{ transitionDelay: `${i * 0.1}s` }}>
-                    <div className="service-icon-box">{s.icon}</div>
+                    <div className="service-icon-box">{s.icon || '📋'}</div>
                     <div className="service-text">
                       <h3>{s.title}</h3>
-                      <p>{s.desc}</p>
+                      <p>{s.description || s.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -253,27 +327,98 @@ function App() {
             </div>
           </section>
 
-          {/* Software Solutions Section */}
+          {/* Software Solutions Slider Section */}
           <section className="software-solutions">
-            <div className="container solutions-container">
-              <div className="solutions-text reveal fade-up">
-                <h2>Perfect Solution For All Your Software Development Needs</h2>
-                <p>The accumulative process which is involved in the creation of software programs, as well as incorporating all the steps throughout the systems development life cycle is termed as software development. There are a lot of companies all over the world offering software development services.</p>
-                <div className="solutions-list">
-                  {[
-                    "Software Development", "Digital Marketing",
-                    "Mobile App Development", "E-Commerce",
-                    "Web Development", "Strategic Plans"
-                  ].map((item, i) => (
-                    <div key={i} className="solution-item reveal fade-up" style={{ transitionDelay: `${i * 0.05}s` }}>
-                      <span className="check-icon">⚙</span>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="solutions-image reveal slide-right">
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" alt="Dashboard" />
+            <div className="container">
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={solutionSlide}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.5 }}
+                  className="solutions-container"
+                >
+                  {solutionSlide === 0 && (
+                    <>
+                      <div className="solutions-text">
+                        <h2>Perfect Solution For All Your Software Development Needs</h2>
+                        <p>The accumulative process which is involved in the creation of software programs, as well as incorporating all the steps throughout the systems development life cycle is termed as software development.</p>
+                        <div className="solutions-list">
+                          {["Software Development", "Web Application", "Mobile App Development", "UI/UX Design", "Custom Backend", "Scalable Systems"].map((item, i) => (
+                            <div key={i} className="solution-item">
+                              <span className="check-icon">⚙</span>
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="btn-row" style={{display: 'flex', gap: '15px', marginTop: '30px'}}>
+                          <button className="analyze-btn" style={{margin: 0}} onClick={() => setActivePage('web-dev')}>Get Started</button>
+                          <button className="analyze-btn" style={{margin: 0, background: 'white', border: '2px solid var(--dark-blue)', color: 'var(--dark-blue)'}} onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('web-dev'); }}>View Portfolio</button>
+                        </div>
+                      </div>
+                      <div className="solutions-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" alt="Dashboard" />
+                      </div>
+                    </>
+                  )}
+                  {solutionSlide === 1 && (
+                    <>
+                      <div className="solutions-text">
+                        <h2>Strategic Digital Growth & Online Visibility</h2>
+                        <p>Our expert team develops tailored digital marketing strategies that combine SEO, social media, and data analytics to put your brand at the top of search results and drive quality traffic.</p>
+                        <div className="solutions-list">
+                          {["SEO Optimization", "Digital Marketing", "Social Media Management", "Content Strategy", "Traffic Analytics", "Growth Hacking"].map((item, i) => (
+                            <div key={i} className="solution-item">
+                              <span className="check-icon">⚙</span>
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="btn-row" style={{display: 'flex', gap: '15px', marginTop: '30px'}}>
+                          <button className="analyze-btn" style={{margin: 0}} onClick={() => setActivePage('marketing')}>Grow My Brand</button>
+                          <button className="analyze-btn" style={{margin: 0, background: 'white', border: '2px solid var(--dark-blue)', color: 'var(--dark-blue)'}} onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('marketing'); }}>View Portfolio</button>
+                        </div>
+                      </div>
+                      <div className="solutions-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" alt="Marketing Analytics" />
+                      </div>
+                    </>
+                  )}
+                  {solutionSlide === 2 && (
+                    <>
+                      <div className="solutions-text">
+                        <h2>Enterprise E-Commerce & Retail Innovation</h2>
+                        <p>Build scalable, secure, and user-centric online stores that convert browsers into buyers. From inventory management to seamless checkout, we cover every aspect of modern retail.</p>
+                        <div className="solutions-list">
+                          {["E-Commerce Stores", "Payment Integration", "Inventory Management", "B2B Wholesale Portals", "Security Audit", "User Experience"].map((item, i) => (
+                            <div key={i} className="solution-item">
+                              <span className="check-icon">⚙</span>
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="btn-row" style={{display: 'flex', gap: '15px', marginTop: '30px'}}>
+                          <button className="analyze-btn" style={{margin: 0}} onClick={() => setActivePage('ecommerce')}>Start Selling</button>
+                          <button className="analyze-btn" style={{margin: 0, background: 'white', border: '2px solid var(--dark-blue)', color: 'var(--dark-blue)'}} onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('ecommerce'); }}>View Portfolio</button>
+                        </div>
+                      </div>
+                      <div className="solutions-image">
+                        <img src="https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=800" alt="E-commerce" />
+                      </div>
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="slider-dots">
+                {[0, 1, 2].map((i) => (
+                  <button 
+                    key={i} 
+                    className={`dot ${solutionSlide === i ? 'active' : ''}`}
+                    onClick={() => setSolutionSlide(i)}
+                  />
+                ))}
               </div>
             </div>
           </section>
@@ -293,22 +438,61 @@ function App() {
               </div>
             </div>
           </section>
+
+          {/* UI/UX Showcase Section */}
+          <section className="seo-audit" style={{ background: 'white' }}>
+            <div className="container audit-container">
+              <div className="audit-text reveal fade-up">
+                <span className="sub-heading-new">Crafting Digital Experiences</span>
+                <h2>Strategic UI/UX Design & Rapid Prototyping</h2>
+                <p>We create intuitive, user-centric designs that drive engagement and loyalty. Our rapid prototyping process allows you to visualize your product before a single line of code is written.</p>
+                <p>Every pixel is placed with purpose, ensuring a seamless journey for your users across all devices and platforms.</p>
+                <div className="btn-row" style={{display: 'flex', gap: '15px', marginTop: '30px'}}>
+                  <button className="analyze-btn" style={{ background: '#0f172a', margin: 0 }} onClick={() => setActivePage('uiux')}>VIEW DESIGN PROCESS</button>
+                  <button className="analyze-btn" style={{ margin: 0, background: 'transparent', border: '2px solid #0f172a', color: '#0f172a' }} onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('uiux'); }}>VIEW PORTFOLIO</button>
+                </div>
+              </div>
+              <div className="audit-image reveal fade-up">
+                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800" alt="UI UX Design" />
+              </div>
+            </div>
+          </section>
+
+          {/* Cloud Infrastructure Section */}
+          <section className="seo-audit">
+            <div className="container audit-container">
+              <div className="audit-image reveal fade-up">
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800" alt="Cloud Infrastructure" />
+              </div>
+              <div className="audit-text reveal fade-up">
+                <span className="sub-heading-new">Infrastructure for Growth</span>
+                <h2>Scalable Cloud Architecture & DevOps Excellence</h2>
+                <p>Ensure your application remains performant as you scale. Our cloud experts build resilient, secure, and cost-effective infrastructures tailored to your business needs.</p>
+                <p>From automated deployments to 24/7 monitoring, we provide the backbone your digital product needs to succeed in a competitive landscape.</p>
+                <button className="analyze-btn">EXPLORE CLOUD SOLUTIONS</button>
+              </div>
+            </div>
+          </section>
         </>
       )}
+
 
       {activePage === 'about' && <AboutUs />}
       {/* Social Sidebars */}
       <div className="social-sidebar-left">
-        <a href="#" className="social-icon fb"><Facebook size={18} /></a>
-        <a href="#" className="social-icon tw"><Twitter size={18} /></a>
-        <a href="#" className="social-icon li"><Linkedin size={18} /></a>
+        <a href="https://m.facebook.com/p/Dev-Spectra-61580077143686/?name=xhp_nt__fb__action__open_user&wtsid=rdr_00sNFa5KHtj8SF1dp#" target="_blank" rel="noreferrer" className="social-icon fb"><Facebook size={18} /></a>
+        <a href="https://www.linkedin.com/search/results/all/?keywords=devspectra&origin=RICH_QUERY_TYPEAHEAD_HISTORY&heroEntityKey=urn%3Ali%3Aorganization%3A108557209&position=0" target="_blank" rel="noreferrer" className="social-icon li"><Linkedin size={18} /></a>
+        <a href="https://www.instagram.com/devspectra_dm/" target="_blank" rel="noreferrer" className="social-icon ig"><Instagram size={18} /></a>
       </div>
 
       <div className="social-sidebar-right">
-        <a href="#" className="social-icon wa"><MessageCircle size={18} /></a>
-        <a href="#" className="social-icon ig"><Instagram size={18} /></a>
-        <a href="#" className="social-icon yt"><Youtube size={18} /></a>
-        <a href="#" className="social-icon ml"><Mail size={18} /></a>
+        <a href="https://www.youtube.com/@Devspectratech" target="_blank" rel="noreferrer" className="social-icon yt"><Youtube size={18} /></a>
+        <a href="https://wa.me/917695890189" target="_blank" rel="noreferrer" className="social-icon wa">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+        </a>
+        <a href={`mailto:${settings?.contactEmail || 'contact@devspectra.com'}`} className="social-icon ml"><Mail size={18} /></a>
       </div>
 
       {activePage === 'how' && <HowItWorks setActivePage={setActivePage} />}
@@ -318,6 +502,7 @@ function App() {
       {activePage === 'uiux' && <UIUXBranding setActivePage={setActivePage} />}
       {activePage === 'marketing' && <DigitalMarketing setActivePage={setActivePage} />}
       {activePage === 'ecommerce' && <EcommerceSolutions setActivePage={setActivePage} />}
+      {activePage === 'stories' && <SuccessStories />}
       {activePage === 'contact' && <Contact />}
 
 
@@ -332,10 +517,10 @@ function App() {
               Empowering businesses through cutting-edge software solutions and innovative digital strategies. We turn your vision into reality.
             </p>
             <div className="footer-socials">
-              <div className="f-social-item fb"><Facebook size={18} /></div>
-              <div className="f-social-item tw"><Twitter size={18} /></div>
-              <div className="f-social-item ln"><Linkedin size={18} /></div>
-              <div className="f-social-item in"><Instagram size={18} /></div>
+              <a href="https://m.facebook.com/p/Dev-Spectra-61580077143686/?name=xhp_nt__fb__action__open_user&wtsid=rdr_00sNFa5KHtj8SF1dp#" target="_blank" rel="noreferrer" className="f-social-item fb"><Facebook size={18} /></a>
+              <a href="https://www.linkedin.com/search/results/all/?keywords=devspectra&origin=RICH_QUERY_TYPEAHEAD_HISTORY&heroEntityKey=urn%3Ali%3Aorganization%3A108557209&position=0" target="_blank" rel="noreferrer" className="f-social-item ln"><Linkedin size={18} /></a>
+              <a href="https://www.instagram.com/devspectra_dm/" target="_blank" rel="noreferrer" className="f-social-item in"><Instagram size={18} /></a>
+              <a href="https://www.youtube.com/@Devspectratech" target="_blank" rel="noreferrer" className="f-social-item yt" style={{background: '#ff0000'}}><Youtube size={18} /></a>
             </div>
           </div>
 
@@ -345,6 +530,7 @@ function App() {
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('home'); }}>Home</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>About US</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); }}>How it Works</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('stories'); }}>Success Stories</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); }}>Request a Quote</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('contact'); }}>Contact Us</a></li>
             </ul>
@@ -365,15 +551,15 @@ function App() {
             <h3>Contact Us</h3>
             <div className="f-contact-item">
               <MapPin size={18} />
-              <span>No.20/9, Sardar Patel Road, Chennai - 600020</span>
+              <span>{settings?.address || 'No.20/9, Sardar Patel Road, Chennai - 600020'}</span>
             </div>
             <div className="f-contact-item">
               <Phone size={18} />
-              <span>+91 99520 74904</span>
+              <span>{settings?.contactPhone || '+91 76958 90189'}</span>
             </div>
             <div className="f-contact-item">
               <Mail size={18} />
-              <span>contact@devspectra.com</span>
+              <span>{settings?.contactEmail || 'contact@devspectra.com'}</span>
             </div>
           </div>
         </div>
@@ -384,10 +570,13 @@ function App() {
             <div className="f-bottom-links">
               <a href="#">Privacy Policy</a>
               <a href="#">Terms of Service</a>
+              <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer" style={{ color: '#f59e0b', fontWeight: 'bold' }}>Admin Portal</a>
             </div>
           </div>
         </div>
       </footer>
+        </>
+      )}
 
 
       {/* Mobile Sidebar Menu */}
@@ -416,6 +605,7 @@ function App() {
                   <ul className="mobile-sub-menu">
                     <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('about'); }}>ABOUT US</a></li>
                     <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('how'); }}>HOW IT WORKS</a></li>
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('stories'); }}>SUCCESS STORIES</a></li>
                     <li><a href="#" onClick={(e) => { e.preventDefault(); setActivePage('quote'); }}>REQUEST A QUOTE</a></li>
                   </ul>
                 )}
@@ -444,7 +634,7 @@ function App() {
             <h3>HEAD OFFICE – INDIA</h3>
             <div className="office-info">
               <p><MapPin size={16} /> No.20/9, Sardar Patel Road, Janaki Complex, 4th Floor, Adyar, Chennai – 600020</p>
-              <p><Phone size={16} /> Phone: +91 99520 74904</p>
+              <p><Phone size={16} /> Phone: +91 76958 90189</p>
               <p><Mail size={16} /> Email: contact@devspectra.com</p>
             </div>
           </div>
@@ -458,14 +648,11 @@ function App() {
             </div>
           </div>
 
-          <div className="sidebar-nav-section">
-            <h3>FOLLOW US</h3>
             <div className="sidebar-socials">
-              <Facebook size={18} />
-              <Twitter size={18} />
-              <Linkedin size={18} />
+              <a href="https://m.facebook.com/p/Dev-Spectra-61580077143686/?name=xhp_nt__fb__action__open_user&wtsid=rdr_00sNFa5KHtj8SF1dp#" target="_blank" rel="noreferrer"><Facebook size={18} /></a>
+              <a href="https://www.linkedin.com/search/results/all/?keywords=devspectra&origin=RICH_QUERY_TYPEAHEAD_HISTORY&heroEntityKey=urn%3Ali%3Aorganization%3A108557209&position=0" target="_blank" rel="noreferrer"><Linkedin size={18} /></a>
+              <a href="https://www.instagram.com/devspectra_dm/" target="_blank" rel="noreferrer"><Instagram size={18} /></a>
             </div>
-          </div>
 
 
         </div>
@@ -626,7 +813,8 @@ function App() {
         .nav-menu li a {
           text-decoration: none;
           color: #333;
-          font-weight: 600;
+          font-family: var(--font-heading);
+          font-weight: 800;
           font-size: 14px;
           display: flex;
           align-items: center;
@@ -662,6 +850,7 @@ function App() {
         .dropdown li a {
           padding: 15px 25px !important;
           color: #444 !important;
+          font-family: var(--font-heading) !important;
           font-weight: 700 !important;
           font-size: 14px !important;
           text-transform: uppercase !important;
@@ -984,6 +1173,35 @@ function App() {
           box-shadow: 0 30px 60px rgba(0,0,0,0.1);
         }
 
+        .slider-dots {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 40px;
+        }
+
+        .slider-dots .dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 2px solid #e2e8f0;
+          background: white;
+          cursor: pointer;
+          transition: 0.3s;
+          padding: 0;
+        }
+
+        .slider-dots .dot.active {
+          background: #10b981;
+          border-color: #10b981;
+          transform: scale(1.2);
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .slider-dots .dot:hover:not(.active) {
+          border-color: #10b981;
+        }
+
         .seo-audit {
           padding: 100px 0;
           background: #f8fafc;
@@ -998,7 +1216,10 @@ function App() {
 
         .audit-image img {
           width: 100%;
+          height: 350px;
+          object-fit: cover;
           border-radius: 30px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
         .sub-heading-new {
@@ -1033,6 +1254,35 @@ function App() {
           background: var(--primary-purple);
           transform: translateY(-3px);
         }
+
+        /* Portfolio Section Home */
+        .portfolio-section-new { padding: 100px 0; background: white; }
+        .portfolio-grid-home { 
+          display: flex; 
+          gap: 30px; 
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-behavior: smooth;
+          padding-bottom: 20px;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .portfolio-grid-home::-webkit-scrollbar {
+          display: none;
+        }
+        .portfolio-card-home {
+          flex: 0 0 calc(33.333% - 20px);
+          scroll-snap-align: start;
+        }
+        .portfolio-card-home { border-radius: 24px; overflow: hidden; position: relative; height: 350px; cursor: pointer; }
+        .p-img-box { width: 100%; height: 100%; position: relative; }
+        .p-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .p-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(2, 6, 23, 0.9) 0%, transparent 100%); padding: 30px; display: flex; flex-direction: column; justify-content: flex-end; opacity: 0; transform: translateY(20px); transition: 0.4s; }
+        .portfolio-card-home:hover .p-overlay { opacity: 1; transform: translateY(0); }
+        .portfolio-card-home:hover .p-img-box img { transform: scale(1.1); }
+        .p-cat { color: #10b981; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .p-overlay h3 { color: white; font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .p-overlay p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
 
 
         .mobile-sidebar {
@@ -1122,6 +1372,12 @@ function App() {
           cursor: pointer;
           border-bottom: 1px solid #f1f5f9;
           text-transform: uppercase;
+          transition: all 0.3s ease;
+        }
+
+        .mobile-dropdown-trigger:hover {
+          color: var(--primary-emerald);
+          padding-left: 5px;
         }
 
         .mobile-sub-menu {
@@ -1145,6 +1401,7 @@ function App() {
 
         .mobile-sub-menu li a:hover {
           color: var(--accent-orange) !important;
+          padding-left: 5px !important;
         }
 
         .sidebar-socials {
@@ -1182,7 +1439,7 @@ function App() {
         }
 
         .mobile-nav-list li a:hover {
-          color: var(--accent-orange);
+          color: var(--primary-emerald);
           padding-left: 10px;
         }
 
@@ -1202,7 +1459,15 @@ function App() {
           .solutions-image, .audit-image { order: -1; }
         }
 
+        @media (max-width: 992px) {
+          .portfolio-card-home {
+            flex: 0 0 calc(50% - 15px);
+          }
+        }
         @media (max-width: 768px) {
+          .portfolio-card-home {
+            flex: 0 0 100%;
+          }
           .services-grid-main { grid-template-columns: 1fr; }
           .top-bar-right { display: none; }
           .hero-text h1 { font-size: 36px; }
@@ -1255,6 +1520,70 @@ function App() {
           }
         }
       `}</style>
+
+      {activePage === 'admin' && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'white' }}>
+          <AdminPortal onLogout={() => setActivePage('home')} refreshData={fetchData} />
+        </div>
+      )}
+      {/* Info Modal */}
+      <AnimatePresence>
+        {showInfoModal && (
+          <div className="modal-overlay" style={{zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowInfoModal(false)}>
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="detail-modal" 
+              style={{maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto'}}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="modal-top-brand">
+                <img src={logo} alt="DevSpectra Logo" className="modal-logo-small" />
+                <span className="modal-brand-name">DevSpectra Digital</span>
+              </div>
+              <button className="close-modal" onClick={() => setShowInfoModal(false)}>×</button>
+              
+              <div style={{padding: '40px'}}>
+                <h2 style={{fontSize: '32px', fontWeight: '900', marginBottom: '15px', color: '#0f172a'}}>DevSpectra at a Glance</h2>
+                <p style={{color: '#64748b', lineHeight: '1.7', marginBottom: '30px'}}>
+                  DevSpectra is a premier technology agency specializing in transforming businesses through high-performance software development and data-driven digital marketing. We bridge the gap between complex technology and business growth.
+                </p>
+
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px'}}>
+                  <div style={{background: '#f8fafc', padding: '20px', borderRadius: '15px', border: '1px solid #f1f5f9'}}>
+                    <h4 style={{fontSize: '14px', color: '#10b981', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px'}}>Core Expertise</h4>
+                    <ul style={{listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', color: '#475569', fontWeight: '600'}}>
+                      <li style={{marginBottom: '8px'}}>• Web Architecture</li>
+                      <li style={{marginBottom: '8px'}}>• Mobile Eco-systems</li>
+                      <li style={{marginBottom: '8px'}}>• E-Commerce Growth</li>
+                      <li>• Strategic SEO</li>
+                    </ul>
+                  </div>
+                  <div style={{background: '#f8fafc', padding: '20px', borderRadius: '15px', border: '1px solid #f1f5f9'}}>
+                    <h4 style={{fontSize: '14px', color: '#3b82f6', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px'}}>Support HQ</h4>
+                    <p style={{fontSize: '13px', color: '#475569', lineHeight: '1.6'}}>
+                      {settings?.address || 'No.20/9, Sardar Patel Road, Chennai - 600020'}<br/>
+                      <strong>India</strong><br/>
+                      Phone: +91 76958 90189
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{textAlign: 'center'}}>
+                  <button 
+                    className="primary-btn" 
+                    style={{width: '100%', padding: '18px', background: '#0f172a'}}
+                    onClick={() => { setShowInfoModal(false); setActivePage('contact'); }}
+                  >
+                    Partner With Us Today
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

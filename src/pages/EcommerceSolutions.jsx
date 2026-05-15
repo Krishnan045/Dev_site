@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store,
@@ -57,14 +57,45 @@ const EcommerceSolutions = ({ setActivePage }) => {
 
   const [activeFaq, setActiveFaq] = useState(null);
 
-  const services = [
-    { title: "Custom B2C Stores", desc: "Tailored online shopping experiences designed to convert visitors into loyal customers.", tags: ["React", "Node.js", "Payment APIs"], icon: <ShoppingCart className="icon-gradient-amber" />, color: "rgba(245, 158, 11, 0.1)" },
-    { title: "B2B Marketplaces", desc: "Complex multi-vendor platforms with advanced inventory and vendor management systems.", tags: ["Multi-vendor", "Wholesale", "Bulk Orders"], icon: <Layers className="icon-gradient-purple" />, color: "rgba(5, 150, 105, 0.1)" },
-    { title: "Mobile Commerce", desc: "PWA and native mobile shopping apps for a seamless on-the-go purchasing experience.", tags: ["PWA", "iOS", "Android"], icon: <Smartphone className="icon-gradient-indigo" />, color: "rgba(52, 211, 153, 0.1)" },
-    { title: "Payment Integration", desc: "Secure integration of global payment gateways including Stripe, PayPal, and more.", tags: ["Stripe", "PayPal", "PCI Compliance"], icon: <CreditCard className="icon-gradient-amber" />, color: "rgba(245, 158, 11, 0.1)" },
-    { title: "Inventory Systems", desc: "Real-time sync between your online store and warehouse management software.", tags: ["Stock Sync", "Order Mgmt", "Automation"], icon: <Package className="icon-gradient-rose" />, color: "rgba(245, 158, 11, 0.1)" },
-    { title: "E-commerce SEO", desc: "Data-driven optimization to ensure your products rank high on search engine results.", tags: ["Product SEO", "Rich Snippets", "Speed"], icon: <Search className="icon-gradient-blue" />, color: "rgba(245, 158, 11, 0.1)" }
-  ];
+
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const [sRes, pRes] = await Promise.all([
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+        setDynamicServices(Array.isArray(sRes) ? sRes.filter(s => s.category === 'E-Commerce') : []);
+        setDynamicProjects(Array.isArray(pRes) ? pRes.filter(p => 
+          p.category?.toLowerCase() === 'e-commerce' || 
+          p.category?.toLowerCase().includes('ecommerce') || 
+          p.category?.toLowerCase().includes('store') || 
+          p.category?.toLowerCase().includes('commerce')
+        ) : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchPageData();
+  }, []);
+
+  useEffect(() => {
+    const target = sessionStorage.getItem('scrollTarget');
+    if (target === 'portfolio') {
+      setTimeout(() => {
+        const el = document.getElementById('portfolio');
+        if (el) {
+          const offset = 100;
+          const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+        sessionStorage.removeItem('scrollTarget');
+      }, 500);
+    }
+  }, []);
 
   const platforms = [
     { name: "Shopify", logo: "https://cdn.worldvectorlogo.com/logos/shopify.svg" },
@@ -117,7 +148,7 @@ const EcommerceSolutions = ({ setActivePage }) => {
 
             <div className="hero-cta-group">
               <button className="btn-hero-primary btn-blue-v2" onClick={() => setActivePage('quote')}>Start Building</button>
-              <button className="btn-hero-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }} onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>View Portfolio</button>
+              <button className="btn-hero-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }} onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>View Portfolio</button>
             </div>
           </motion.div>
 
@@ -182,25 +213,48 @@ const EcommerceSolutions = ({ setActivePage }) => {
             variants={staggerContainer}
             className="services-grid-new"
           >
-            {services.map((s, i) => (
+            {(dynamicServices.length > 0 ? dynamicServices : []).map((s, i) => (
               <motion.div
                 key={i}
                 variants={fadeInUp}
                 whileHover={{ y: -10, boxShadow: "0 25px 50px rgba(0,0,0,0.06)" }}
                 className="service-card-modern"
               >
-                <div className="card-icon-wrapper" style={{ background: s.color }}>
-                  {s.icon}
+                <div className="card-icon-wrapper" style={{ background: s.color || 'rgba(245, 158, 11, 0.1)' }}>
+                  {typeof s.icon === 'string' ? <span style={{fontSize: '24px'}}>{s.icon}</span> : s.icon}
                 </div>
                 <h3>{s.title}</h3>
-                <p>{s.desc}</p>
+                <p>{s.description || s.desc}</p>
                 <div className="tag-list">
-                  {s.tags.map((tag, idx) => <span key={idx} className="tag-item">{tag}</span>)}
+                  {(Array.isArray(s.tags) ? s.tags : (s.tags ? s.tags.split(',') : (s.tags_list || ['Storefront', 'Checkout']))).map((tag, idx) => <span key={idx} className="tag-item">{tag.trim()}</span>)}
                 </div>
                 <div className="card-arrow-link"><ArrowRight size={16} /></div>
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Dynamic E-commerce Portfolios */}
+          <div id="portfolio" className="ecommerce-projects-dynamic" style={{marginTop: '80px'}}>
+            <div className="section-header-centered reveal fade-up">
+              <h2>Our Recent <span className="text-gradient-indigo">E-commerce Stores</span></h2>
+            </div>
+            <div className="infinite-carousel-container">
+              <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+                {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : dynamicProjects).filter(p => p.isActive !== false).map((p, i) => (
+                  <div key={i} className="project-card-new" style={{background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #f1f5f9'}}>
+                    <div className="proj-img-box">
+                      <img src={p.imageUrl || p.img} alt={p.title} />
+                    </div>
+                    <div style={{padding: '25px'}}>
+                      <h4 style={{fontSize: '20px', fontWeight: '800', margin: '0 0 10px'}}>{p.title}</h4>
+                      <p style={{color: '#64748b', fontSize: '14px', margin: '0 0 15px'}}>{p.description || p.desc}</p>
+                      <a href={p.link || "#"} target="_blank" rel="noreferrer" style={{color: '#10b981', fontWeight: '800', textDecoration: 'none'}}>Visit Store →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

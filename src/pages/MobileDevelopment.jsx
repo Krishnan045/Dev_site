@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Smartphone, 
@@ -75,6 +75,49 @@ const MobileDevelopment = ({ setActivePage }) => {
     { title: "Progressive Applications", desc: "Progressive web apps combine the best of both web and app. Users don't need to install an app and the app loads lightning fast on a browser.", icon: <Globe className="text-mild-blue" /> }
   ];
 
+
+  const [dynamicServices, setDynamicServices] = useState([
+    { title: "iOS Development", description: "High-performance applications designed specifically for Apple's ecosystem.", icon: "🍎" },
+    { title: "Android Development", description: "Versatile and scalable apps built for the world's most popular mobile OS.", icon: "🤖" },
+    { title: "Cross-Platform", description: "Seamless experiences across all devices using React Native or Flutter.", icon: "📱" }
+  ]);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const [sRes, pRes] = await Promise.all([
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+        setDynamicServices(Array.isArray(sRes) ? sRes.filter(s => s.category === 'Mobile App') : []);
+        setDynamicProjects(Array.isArray(pRes) ? pRes.filter(p => 
+          p.category?.toLowerCase() === 'mobile app' || 
+          p.category?.toLowerCase().includes('mobile') || 
+          p.category?.toLowerCase().includes('app')
+        ) : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchPageData();
+  }, []);
+
+  useEffect(() => {
+    const target = sessionStorage.getItem('scrollTarget');
+    if (target === 'portfolio') {
+      setTimeout(() => {
+        const el = document.getElementById('portfolio');
+        if (el) {
+          const offset = 100;
+          const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+        sessionStorage.removeItem('scrollTarget');
+      }, 500);
+    }
+  }, []);
+
   return (
     <div className="mobile-dev-premium">
       {/* Professional Hero Section */}
@@ -108,11 +151,29 @@ const MobileDevelopment = ({ setActivePage }) => {
             <h1>Next-Gen <br /><span className="text-gradient-indigo-v2">Mobile Experiences</span></h1>
             <p>Building immersive iOS and Android applications that engage users and drive tangible business results.</p>
             <div className="hero-cta-group">
-              <button className="btn-hero-primary btn-indigo" onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>View Portfolio</button>
+              <button className="btn-hero-primary btn-indigo" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>View Portfolio</button>
               <button className="btn-hero-outline" onClick={() => setActivePage('quote')}>Get a Quote</button>
             </div>
           </motion.div>
         </div>
+      </section>
+
+      {/* Dynamic Services Section */}
+      <section className="services-grid-section reveal fade-up" style={{padding: '100px 0', background: '#f8fafc'}}>
+          <div className="container">
+            <div className="section-header-centered">
+              <h2>Mobile App <span className="text-mild-blue">Solutions</span></h2>
+            </div>
+            <div className="services-grid-main" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px'}}>
+              {dynamicServices.filter(s => s.isActive !== false).map((s, i) => (
+                <div key={i} className="service-card-modern" style={{background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'}}>
+                  <div className="service-icon-box" style={{fontSize: '40px', marginBottom: '20px'}}>{s.icon}</div>
+                  <h3 style={{fontSize: '20px', fontWeight: '800', marginBottom: '15px'}}>{s.title}</h3>
+                  <p style={{color: '#64748b', fontSize: '15px', lineHeight: '1.6'}}>{s.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
       </section>
 
       {/* App Types Section */}
@@ -372,6 +433,31 @@ const MobileDevelopment = ({ setActivePage }) => {
               <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" alt="Accessible Content" />
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Portfolio Section */}
+      <section id="portfolio" className="recent-projects-section reveal fade-up" style={{padding: '100px 0', background: '#f1f5f9'}}>
+        <div className="container">
+          <div className="section-header-centered">
+            <h2>Recent Mobile <span className="text-mild-blue">Projects</span></h2>
+          </div>
+          <div className="infinite-carousel-container">
+            <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+              {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : dynamicProjects).filter(p => p.isActive !== false).map((p, i) => (
+                <div key={i} className="project-card-new" style={{background: 'white', borderRadius: '24px', overflow: 'hidden'}}>
+                  <div className="proj-img-box">
+                    <img src={p.imageUrl || p.img} alt={p.title} />
+                  </div>
+                  <div style={{padding: '25px'}}>
+                    <h4 style={{fontSize: '20px', fontWeight: '800', margin: '0 0 10px'}}>{p.title}</h4>
+                    <p style={{color: '#64748b', fontSize: '14px', margin: '0 0 15px'}}>{p.description || p.desc}</p>
+                    <a href={p.link || "#"} target="_blank" rel="noreferrer" style={{color: '#10b981', fontWeight: '800', textDecoration: 'none'}}>View Details →</a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

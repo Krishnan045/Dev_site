@@ -6,9 +6,9 @@ import {
   MapPin, 
   Send, 
   Facebook, 
-  Twitter, 
   Linkedin, 
   Instagram, 
+  Youtube,
   Clock, 
   Globe,
   CheckCircle2,
@@ -19,11 +19,45 @@ import {
 } from 'lucide-react';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    type: '',
+    message: ''
+  });
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      const response = await fetch('/api/public/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          subject: `Website Inquiry: ${formData.type}`,
+          details: { company: formData.company }
+        })
+      });
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Failed to send message. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("An error occurred. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -108,7 +142,7 @@ const Contact = () => {
                 </div>
                 <div className="info-text">
                   <h3>Call Us</h3>
-                  <p>IN: +91 99520 74904</p>
+                  <p>IN: +91 76958 90189</p>
                   <p>US: +1 (718) 395-9499</p>
                 </div>
               </div>
@@ -127,10 +161,26 @@ const Contact = () => {
               <div className="social-connect">
                 <h3>Follow Our Journey</h3>
                 <div className="social-icons-group">
-                  <div className="s-icon"><Facebook size={20} /></div>
-                  <div className="s-icon"><Twitter size={20} /></div>
-                  <div className="s-icon"><Linkedin size={20} /></div>
-                  <div className="s-icon"><Instagram size={20} /></div>
+                  <a href="https://m.facebook.com/p/Dev-Spectra-61580077143686/?name=xhp_nt__fb__action__open_user&wtsid=rdr_00sNFa5KHtj8SF1dp#" target="_blank" rel="noreferrer" className="s-icon" style={{background: '#1877F2', color: '#fff'}}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                  <a href="https://www.linkedin.com/search/results/all/?keywords=devspectra&origin=RICH_QUERY_TYPEAHEAD_HISTORY&heroEntityKey=urn%3Ali%3Aorganization%3A108557209&position=0" target="_blank" rel="noreferrer" className="s-icon" style={{background: '#0A66C2', color: '#fff'}}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </a>
+                  <a href="https://www.instagram.com/devspectra_dm/" target="_blank" rel="noreferrer" className="s-icon" style={{background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#fff'}}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.054 1.805.249 2.227.412.558.217.957.477 1.377.896.419.42.679.819.896 1.377.163.422.358 1.057.412 2.227.059 1.265.071 1.645.071 4.85s-.012 3.584-.071 4.85c-.054 1.17-.249 1.805-.412 2.227-.217.558-.477.957-.896 1.377-.42.419-.819.679-1.377.896-.422.163-1.057.358-2.227.412-1.265.059-1.645.071-4.85.071s-3.584-.012-4.85-.071c-1.17-.054-1.805-.249-2.227-.412-.558-.217-.957-.477-1.377-.896-.419-.42-.679-.819-.896-1.377-.163-.422-.358-1.057-.412-2.227-.059-1.265-.071-1.645-.071-4.85s.012-3.584.071-4.85c.054-1.17.249-1.805.412-2.227.217-.558.477-.957.896-1.377.42-.419.819-.679 1.377-.896.422-.163 1.057-.358 2.227-.412 1.265-.059 1.645-.071 4.85-.071zM12 0C8.741 0 8.333.014 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.741 0 12s.012 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126s1.384 1.078 2.126 1.384c.766.296 1.636.499 2.913.558C8.333 23.988 8.741 24 12 24s3.667-.012 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384s1.078-1.384 1.384-2.126c.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.012-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126s-1.384-1.078-2.126-1.384c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                  </a>
+                  <a href="https://www.youtube.com/@Devspectratech" target="_blank" rel="noreferrer" className="s-icon" style={{background: '#FF0000', color: '#fff'}}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -151,28 +201,59 @@ const Contact = () => {
                 <div className="form-row">
                   <div className="input-group">
                     <label><User size={14} /> Full Name *</label>
-                    <input type="text" placeholder="John Doe" required />
+                    <input 
+                      type="text" 
+                      name="name"
+                      placeholder="John Doe" 
+                      value={formData.name}
+                      onChange={handleChange}
+                      required 
+                    />
                   </div>
                   <div className="input-group">
                     <label><Mail size={14} /> Email Address *</label>
-                    <input type="email" placeholder="john@example.com" required />
+                    <input 
+                      type="email" 
+                      name="email"
+                      placeholder="john@example.com" 
+                      value={formData.email}
+                      onChange={handleChange}
+                      required 
+                    />
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="input-group">
                     <label><Phone size={14} /> Phone Number</label>
-                    <input type="tel" placeholder="+91 00000 00000" />
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      placeholder="+91 00000 00000" 
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="input-group">
                     <label><Building size={14} /> Company Name</label>
-                    <input type="text" placeholder="Your Company" />
+                    <input 
+                      type="text" 
+                      name="company"
+                      placeholder="Your Company" 
+                      value={formData.company}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
 
                 <div className="input-group">
                   <label><Monitor size={14} /> Website Type *</label>
-                  <select required>
+                  <select 
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="">Select Website Type</option>
                     <option value="business">Business Website</option>
                     <option value="ecommerce">E-commerce Store</option>
@@ -186,11 +267,18 @@ const Contact = () => {
 
                 <div className="input-group">
                   <label><MessageSquare size={14} /> Your Message *</label>
-                  <textarea placeholder="Tell us about your project or inquiry..." rows="5" required></textarea>
+                  <textarea 
+                    name="message"
+                    placeholder="Tell us about your project or inquiry..." 
+                    rows="5" 
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
                 </div>
 
-                <button type="submit" className="submit-contact-btn">
-                  SEND MESSAGE <Send size={18} />
+                <button type="submit" className="submit-contact-btn" disabled={loading}>
+                  {loading ? 'SENDING...' : 'SEND MESSAGE'} <Send size={18} />
                 </button>
               </form>
             </motion.div>
@@ -240,8 +328,8 @@ const Contact = () => {
         .social-connect { margin-top: 20px; padding: 30px; }
         .social-connect h3 { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 20px; }
         .social-icons-group { display: flex; gap: 15px; }
-        .s-icon { width: 44px; height: 44px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #10b981; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
-        .s-icon:hover { background: #10b981; color: white; transform: translateY(-3px); }
+        .s-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .s-icon:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 
         .contact-form-container { background: white; padding: 50px; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         .form-title { margin-bottom: 40px; }

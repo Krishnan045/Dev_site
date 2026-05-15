@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe,
@@ -93,6 +93,21 @@ const WebDevelopment = ({ setActivePage }) => {
     { title: "Maintenance", desc: "We provide ongoing support and regular updates.", icon: <HeartHandshake />, color: "#064e3b" }
   ];
 
+  useEffect(() => {
+    const target = sessionStorage.getItem('scrollTarget');
+    if (target === 'portfolio') {
+      setTimeout(() => {
+        const el = document.getElementById('portfolio');
+        if (el) {
+          const offset = 100;
+          const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+        sessionStorage.removeItem('scrollTarget');
+      }, 500);
+    }
+  }, []);
+
   const features = [
     { title: "Mobile Responsive", desc: "Looks perfect on all devices and screen sizes.", icon: <Smartphone />, color: "#10b981" },
     { title: "Fast Loading Speed", desc: "Optimized code and performance for speed.", icon: <Zap />, color: "#f59e0b" },
@@ -101,18 +116,35 @@ const WebDevelopment = ({ setActivePage }) => {
     { title: "Scalable Solutions", desc: "Solutions that grow with your business.", icon: <Layers />, color: "#059669" }
   ];
 
-  const projects = [
-    { title: "Furniture Store", category: "E-commerce", desc: "Modern e-commerce website with shopping cart and payment gateway.", img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=600", color: "#10b981" },
-    { title: "Analytics Dashboard", category: "Web Application", desc: "Real-time analytics dashboard for business insights and reports.", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600", color: "#059669" },
-    { title: "Corporate Website", category: "Business", desc: "Professional business website with modern design and animations.", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=600", color: "#34d399" },
-    { title: "Restaurant Website", category: "Business", desc: "Restaurant website with online menu and table reservation.", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=600", color: "#f59e0b" }
-  ];
 
   const testimonials = [
     { name: "John Doe", role: "CEO, TechFlow", comment: "DevSpectra delivered our SaaS platform ahead of schedule with exceptional quality. Their technical depth is unmatched.", stars: 5 },
     { name: "Sarah Smith", role: "Marketing Director, LuxeHome", comment: "The e-commerce store they built for us saw a 40% increase in conversion within the first month. Highly recommended!", stars: 5 },
     { name: "Michael Chen", role: "Founder, GreenGrid", comment: "A truly professional team that understands both business goals and technical constraints perfectly.", stars: 5 }
   ];
+
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const [sRes, pRes] = await Promise.all([
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+        setDynamicServices(Array.isArray(sRes) ? sRes.filter(s => s.category === 'Web Development') : []);
+        setDynamicProjects(Array.isArray(pRes) ? pRes.filter(p => 
+          p.category?.toLowerCase() === 'web development' || 
+          p.category?.toLowerCase().includes('web') || 
+          p.category?.toLowerCase().includes('development')
+        ) : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchPageData();
+  }, []);
 
   const faqs = [
     { q: "How long does a typical web project take?", a: "Most projects take between 4-12 weeks depending on complexity. A simple business site is faster, while a full SaaS platform takes longer." },
@@ -136,7 +168,7 @@ const WebDevelopment = ({ setActivePage }) => {
             <h1> High-Performance <br /><span className="text-gradient-emerald">Web Ecosystems</span></h1>
             <p>Scalable, secure, and stunning web solutions tailored for enterprise growth and user engagement.</p>
             <div className="hero-cta-group">
-              <button className="btn-hero-primary" onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>View Portfolio</button>
+              <button className="btn-hero-primary" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>View Portfolio</button>
               <button className="btn-hero-outline" onClick={() => setActivePage('quote')}>Get a Quote</button>
             </div>
           </motion.div>
@@ -183,20 +215,20 @@ const WebDevelopment = ({ setActivePage }) => {
             variants={staggerContainer}
             className="services-grid-new"
           >
-            {services.map((s, i) => (
+            {(dynamicServices.length > 0 ? dynamicServices : []).filter(s => s.isActive !== false).map((s, i) => (
               <motion.div
                 key={i}
                 variants={fadeInUp}
                 whileHover={{ y: -10, boxShadow: "0 25px 50px rgba(0,0,0,0.06)" }}
                 className="service-card-modern"
               >
-                <div className="card-icon-wrapper" style={{ background: s.color }}>
-                  {s.icon}
+                <div className="card-icon-wrapper" style={{ background: s.color || 'rgba(16, 185, 129, 0.1)' }}>
+                  {typeof s.icon === 'string' ? <span style={{fontSize: '24px'}}>{s.icon}</span> : s.icon}
                 </div>
                 <h3>{s.title}</h3>
-                <p>{s.desc}</p>
+                <p>{s.description || s.desc}</p>
                 <div className="tag-list">
-                  {s.tags.map((tag, idx) => <span key={idx} className="tag-item">{tag}</span>)}
+                  {(Array.isArray(s.tags) ? s.tags : (s.tags ? s.tags.split(',') : (s.tags_list || ['Web Design', 'Development']))).map((tag, idx) => <span key={idx} className="tag-item">{tag.trim()}</span>)}
                 </div>
                 <div className="card-arrow-link"><ArrowRight size={16} /></div>
               </motion.div>
@@ -339,7 +371,7 @@ const WebDevelopment = ({ setActivePage }) => {
       </section>
 
       {/* Recent Projects Section */}
-      <section className="recent-projects-section reveal fade-up">
+      <section id="portfolio" className="recent-projects-section reveal fade-up">
         <div className="container">
           <motion.div
             initial="hidden"
@@ -353,40 +385,35 @@ const WebDevelopment = ({ setActivePage }) => {
             <div className="title-underline"></div>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="projects-grid-modern"
-          >
-            {projects.map((proj, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                whileHover={{ y: -10 }}
-                className="project-card-new"
-              >
-                <div className="proj-img-box">
-                  <img src={proj.img} alt={proj.title} />
-                  <div className="proj-overlay-gradient"></div>
-                  <span className="proj-cat" style={{ borderLeft: `4px solid ${proj.color}` }}>{proj.category}</span>
+          <div className="infinite-carousel-container">
+            <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+              {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : dynamicProjects).filter(p => p.isActive !== false).map((proj, i) => (
+                <div
+                  key={i}
+                  className="project-card-new"
+                >
+                  <div className="proj-img-box">
+                    <img src={proj.imageUrl || proj.img} alt={proj.title} />
+                    <div className="proj-overlay-gradient"></div>
+                    <span className="proj-cat" style={{ borderLeft: `4px solid ${proj.color || '#10b981'}` }}>{proj.category}</span>
+                  </div>
+                  <div className="proj-content">
+                    <h4>{proj.title}</h4>
+                    <p>{proj.description || proj.desc}</p>
+                    <a
+                      href={proj.link || "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="view-proj-link"
+                      style={{ color: proj.color || '#10b981' }}
+                    >
+                      View Project <ChevronRight size={14} />
+                    </a>
+                  </div>
                 </div>
-                <div className="proj-content">
-                  <h4>{proj.title}</h4>
-                  <p>{proj.desc}</p>
-                  <motion.a
-                    href="#"
-                    whileHover={{ x: 5 }}
-                    className="view-proj-link"
-                    style={{ color: proj.color }}
-                  >
-                    View Project <ChevronRight size={14} />
-                  </motion.a>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

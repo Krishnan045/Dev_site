@@ -100,44 +100,49 @@ const DigitalMarketing = ({ setActivePage }) => {
     return () => observer.disconnect();
   }, []);
 
-  const services = [
-    {
-      title: "Advanced SEO",
-      desc: "Dominate search rankings with AI-powered keyword analysis and technical optimization.",
-      icon: <Search className="w-8 h-8" />,
-      color: "#10b981"
-    },
-    {
-      title: "Social Growth",
-      desc: "Viral content strategies and community management across Instagram, LinkedIn & TikTok.",
-      icon: <Share2 className="w-8 h-8" />,
-      color: "#34d399"
-    },
-    {
-      title: "Performance Ads",
-      desc: "High-ROI PPC campaigns on Google and Meta with precise demographic targeting.",
-      icon: <MousePointerClick className="w-8 h-8" />,
-      color: "#f59e0b"
-    },
-    {
-      title: "Content Studio",
-      desc: "Premium video, graphics, and copy that converts cold leads into loyal customers.",
-      icon: <FileText className="w-8 h-8" />,
-      color: "#10b981"
-    },
-    {
-      title: "Email Funnels",
-      desc: "Automated behavior-based email sequences that drive 24/7 revenue on autopilot.",
-      icon: <Mail className="w-8 h-8" />,
-      color: "#059669"
-    },
-    {
-      title: "Growth Analytics",
-      desc: "Unified dashboards tracking multi-channel attribution and customer lifetime value.",
-      icon: <BarChart3 className="w-8 h-8" />,
-      color: "#f59e0b"
-    }
+  const defaultProjects = [
+    { title: "SaaS Growth Campaign", description: "Comprehensive SEO and PPC campaign increasing ARR by 150%.", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600", link: "#" },
+    { title: "Social Viral Strategy", description: "Organic social media campaign reaching 5M+ targeted users.", imageUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=600", link: "#" },
+    { title: "Local SEO Dominance", description: "Hyper-local SEO strategy dominating local map packs and search.", imageUrl: "https://images.unsplash.com/photo-1432888117247-f82ad31dddb2?auto=format&fit=crop&q=80&w=600", link: "#" }
   ];
+
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const [sRes, pRes] = await Promise.all([
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+        setDynamicServices(Array.isArray(sRes) ? sRes.filter(s => s.category === 'Digital Marketing') : []);
+        setDynamicProjects(Array.isArray(pRes) ? pRes.filter(p => 
+          p.category?.toLowerCase() === 'digital marketing' || 
+          p.category?.toLowerCase().includes('marketing') || 
+          p.category?.toLowerCase().includes('seo')
+        ) : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchPageData();
+  }, []);
+
+  useEffect(() => {
+    const target = sessionStorage.getItem('scrollTarget');
+    if (target === 'portfolio') {
+      setTimeout(() => {
+        const el = document.getElementById('portfolio');
+        if (el) {
+          const offset = 100;
+          const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+        sessionStorage.removeItem('scrollTarget');
+      }, 500);
+    }
+  }, []);
 
   const packages = [
     {
@@ -193,7 +198,7 @@ const DigitalMarketing = ({ setActivePage }) => {
             <h1>Data-Driven <br /><span className="text-gradient-teal-v2">Digital Dominance</span></h1>
             <p>Scaling your brand with precision-targeted campaigns and high-ROI marketing strategies that convert.</p>
             <div className="hero-cta-group">
-              <button className="btn-hero-primary btn-teal" onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>View Portfolio</button>
+              <button className="btn-hero-primary btn-teal" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>View Portfolio</button>
               <button className="btn-hero-outline" onClick={() => setActivePage('quote')}>Get Started</button>
             </div>
           </motion.div>
@@ -209,19 +214,41 @@ const DigitalMarketing = ({ setActivePage }) => {
             <p>From awareness to advocacy, we handle every stage of your customer journey.</p>
           </div>
           <div className="services-grid-v2">
-            {services.map((s, i) => (
+            {(dynamicServices.length > 0 ? dynamicServices : []).map((s, i) => (
               <div key={i} className="service-card-premium reveal fade-up" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <div className="icon-box" style={{ background: `${s.color}15`, color: s.color }}>
-                  {s.icon}
+                <div className="icon-box" style={{ background: `${s.color || '#10b981'}15`, color: s.color || '#10b981' }}>
+                  {typeof s.icon === 'string' ? <span style={{fontSize: '32px'}}>{s.icon}</span> : s.icon}
                 </div>
                 <h3>{s.title}</h3>
-                <p>{s.desc}</p>
-                <ul className="service-features-list">
-                  <li><Check size={14} /> AI-driven targeting</li>
-                  <li><Check size={14} /> Weekly optimization</li>
-                </ul>
+                <p>{s.description || s.desc}</p>
+                <div className="tag-list" style={{display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '15px'}}>
+                  {(Array.isArray(s.tags) ? s.tags : (s.tags ? s.tags.split(',') : ['Marketing', 'Strategy'])).map((tag, idx) => <span key={idx} className="tag-item" style={{background: '#f1f5f9', padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '700'}}>{tag.trim()}</span>)}
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Dynamic Marketing Portfolio */}
+          <div id="portfolio" className="marketing-portfolio-dynamic" style={{marginTop: '80px'}}>
+            <div className="section-head reveal fade-up">
+              <h2>Marketing Portfolio</h2>
+            </div>
+            <div className="infinite-carousel-container">
+              <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+                {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : dynamicProjects).filter(p => p.isActive !== false).map((p, i) => (
+                  <div key={i} className="project-card-new" style={{background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'}}>
+                    <div className="proj-img-box">
+                      <img src={p.imageUrl || p.img} alt={p.title} />
+                    </div>
+                    <div style={{padding: '25px'}}>
+                      <h4 style={{fontSize: '20px', fontWeight: '800', margin: '0 0 10px'}}>{p.title}</h4>
+                      <p style={{color: '#64748b', fontSize: '14px', margin: '0 0 15px'}}>{p.description || p.desc}</p>
+                      <a href={p.link || "#"} target="_blank" rel="noreferrer" style={{color: '#10b981', fontWeight: '800', textDecoration: 'none'}}>View Case Study →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Figma,
@@ -77,6 +77,46 @@ const UIUXBranding = ({ setActivePage }) => {
     { name: "Launch", desc: "Going live" }
   ];
 
+
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicProjects, setDynamicProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        const [sRes, pRes] = await Promise.all([
+          fetch('/api/public/services').then(res => res.json()),
+          fetch('/api/public/portfolios').then(res => res.json())
+        ]);
+        setDynamicServices(Array.isArray(sRes) ? sRes.filter(s => s.category === 'UI/UX') : []);
+        setDynamicProjects(Array.isArray(pRes) ? pRes.filter(p => 
+          p.category?.toLowerCase() === 'ui/ux' || 
+          p.category?.toLowerCase().includes('ui') || 
+          p.category?.toLowerCase().includes('ux') || 
+          p.category?.toLowerCase().includes('design')
+        ) : []);
+      } catch (err) {
+        console.error("Failed to fetch page data", err);
+      }
+    };
+    fetchPageData();
+  }, []);
+
+  useEffect(() => {
+    const target = sessionStorage.getItem('scrollTarget');
+    if (target === 'portfolio') {
+      setTimeout(() => {
+        const el = document.getElementById('portfolio');
+        if (el) {
+          const offset = 100;
+          const pos = el.getBoundingClientRect().top + window.pageYOffset - offset;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+        sessionStorage.removeItem('scrollTarget');
+      }, 500);
+    }
+  }, []);
+
   return (
     <div className="uiux-page">
       {/* Professional Hero Section */}
@@ -92,7 +132,7 @@ const UIUXBranding = ({ setActivePage }) => {
             <h1>Where Design Meets <br /><span className="text-gradient-amber-v2">Digital Innovation</span></h1>
             <p>Transforming your brand vision into intuitive, impactful, and beautiful digital experiences that resonate with users.</p>
             <div className="hero-cta-group">
-              <button className="btn-hero-primary btn-amber" onClick={() => { sessionStorage.setItem('scrollTarget', 'portfolio'); setActivePage('about'); }}>Our Portfolio</button>
+              <button className="btn-hero-primary btn-amber" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>Our Portfolio</button>
               <button className="btn-hero-outline" onClick={() => setActivePage('quote')}>Request a Design Audit</button>
             </div>
           </motion.div>
@@ -125,7 +165,7 @@ const UIUXBranding = ({ setActivePage }) => {
             <p>We provide a full spectrum of design services to bring your digital vision to life.</p>
           </div>
           <div className="services-card-grid">
-            {services.map((service, index) => (
+            {(dynamicServices.length > 0 ? dynamicServices : []).map((service, index) => (
               <motion.div
                 key={index}
                 className="box-animation-card reveal fade-up"
@@ -134,14 +174,40 @@ const UIUXBranding = ({ setActivePage }) => {
                 style={{ transitionDelay: `${index * 0.1}s` }}
               >
                 <div className="card-inner-content">
-                  <div className={`service-icon-wrapper ${service.animation}`} style={{ color: service.color, background: `${service.color}10` }}>
-                    {service.icon}
+                  <div className="card-icon-wrapper" style={{ background: service.color || 'rgba(16, 185, 129, 0.1)' }}>
+                    {typeof service.icon === 'string' ? <span style={{fontSize: '24px'}}>{service.icon}</span> : service.icon}
                   </div>
                   <h3>{service.title}</h3>
-                  <p>{service.desc}</p>
+                  <p>{service.description || service.desc}</p>
+                  <div className="tag-list">
+                    {(service.tags ? service.tags.split(',') : (service.tags_list || ['UI Design', 'UX Research'])).map((tag, idx) => <span key={idx} className="tag-item">{tag.trim()}</span>)}
+                  </div>
                 </div>
               </motion.div>
             ))}
+          </div>
+          
+          {/* Dynamic Portfolios for UI/UX */}
+          <div className="uiux-projects-dynamic" style={{marginTop: '80px'}}>
+            <div className="section-header reveal fade-up">
+              <h2>Design Portfolio</h2>
+            </div>
+            <div className="infinite-carousel-container">
+              <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+                {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : dynamicProjects).filter(p => p.isActive !== false).map((p, i) => (
+                  <div key={i} className="project-card-new" style={{background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'}}>
+                    <div className="proj-img-box">
+                      <img src={p.imageUrl || p.img} alt={p.title} />
+                    </div>
+                    <div style={{padding: '25px'}}>
+                      <h4 style={{fontSize: '20px', fontWeight: '800', margin: '0 0 10px'}}>{p.title}</h4>
+                      <p style={{color: '#64748b', fontSize: '14px', margin: '0 0 15px'}}>{p.description || p.desc}</p>
+                      <a href={p.link || "#"} target="_blank" rel="noreferrer" style={{color: '#f59e0b', fontWeight: '800', textDecoration: 'none'}}>View Details →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -181,26 +247,31 @@ const UIUXBranding = ({ setActivePage }) => {
         </div>
       </section>
 
-      {/* Success Stories / Case Studies Heading */}
-      <section className="design-success">
+      {/* Dynamic Portfolio Section */}
+      <section id="portfolio" className="uiux-portfolio-dynamic" style={{padding: '100px 0', background: '#f8fafc'}}>
         <div className="container">
-          <div className="section-header reveal fade-up">
-            <span className="subtitle">Case Studies</span>
-            <h2>Proven <span className="text-gradient-purple">Success</span> Across Industries</h2>
-            <p>Explore how our design solutions have helped businesses achieve their digital objectives.</p>
+          <div className="section-header reveal fade-up" style={{textAlign: 'center', marginBottom: '60px'}}>
+            <h2>Design <span className="text-gradient-purple">Portfolio</span></h2>
+            <p>A collection of our most impactful design transformations.</p>
           </div>
-          <div className="success-stats-row reveal fade-up">
-            <div className="success-stat">
-              <h3>98%</h3>
-              <p>User Satisfaction</p>
-            </div>
-            <div className="success-stat">
-              <h3>40%</h3>
-              <p>Conversion Increase</p>
-            </div>
-            <div className="success-stat">
-              <h3>200+</h3>
-              <p>App Store Reviews</p>
+          <div className="infinite-carousel-container">
+            <div className={`infinite-carousel-slider ${dynamicProjects.length <= 3 ? 'static-grid' : ''}`}>
+              {(dynamicProjects.length > 3 ? [...dynamicProjects, ...dynamicProjects] : (dynamicProjects.length > 0 ? dynamicProjects : [
+                { title: "Fintech Dashboard", description: "Complex data visualization simplified into an intuitive dashboard experience.", imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600" },
+                { title: "Lifestyle App", description: "Immersive mobile experience with seamless interactions and brand-first design.", imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=600" },
+                { title: "Enterprise SaaS", description: "Scalable design system for a multi-layered enterprise software platform.", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" }
+              ])).map((p, i) => (
+                <div key={i} className="project-card-new" style={{background: 'white', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'}}>
+                  <div className="proj-img-box" style={{height: '250px', overflow: 'hidden'}}>
+                    <img src={p.imageUrl || p.img} alt={p.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                  </div>
+                  <div style={{padding: '25px'}}>
+                    <h4 style={{fontSize: '20px', fontWeight: '800', margin: '0 0 10px'}}>{p.title}</h4>
+                    <p style={{color: '#64748b', fontSize: '14px', margin: '0 0 15px'}}>{p.description || p.desc}</p>
+                    <a href={p.link || "#"} target="_blank" rel="noreferrer" style={{color: '#8b5cf6', fontWeight: '800', textDecoration: 'none'}}>View Case Study →</a>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

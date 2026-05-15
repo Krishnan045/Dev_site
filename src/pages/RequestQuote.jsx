@@ -3,11 +3,54 @@ import { motion } from 'framer-motion';
 import { Send, User, Mail, Phone, Building, MessageSquare, CheckCircle, Monitor } from 'lucide-react';
 
 const RequestQuote = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    interests: '',
+    service: '',
+    websiteType: '',
+    details: ''
+  });
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      const response = await fetch('/api/public/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          type: 'quote',
+          subject: `Quote Request: ${formData.service}`,
+          message: formData.details,
+          details: {
+            interests: formData.interests,
+            service: formData.service,
+            websiteType: formData.websiteType
+          }
+        })
+      });
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Failed to submit request. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("An error occurred. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -143,29 +186,61 @@ const RequestQuote = () => {
                 <div className="form-group-grid">
                   <div className="input-group">
                     <label><User size={14} /> Full Name</label>
-                    <input type="text" placeholder="John Doe" required />
+                    <input 
+                      type="text" 
+                      name="name"
+                      placeholder="John Doe" 
+                      value={formData.name}
+                      onChange={handleChange}
+                      required 
+                    />
                   </div>
                   <div className="input-group">
                     <label><Mail size={14} /> Email Address</label>
-                    <input type="email" placeholder="john@example.com" required />
+                    <input 
+                      type="email" 
+                      name="email"
+                      placeholder="john@example.com" 
+                      value={formData.email}
+                      onChange={handleChange}
+                      required 
+                    />
                   </div>
                 </div>
 
                 <div className="form-group-grid">
                   <div className="input-group">
                     <label><Phone size={14} /> Phone Number</label>
-                    <input type="tel" placeholder="+91 00000 00000" />
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      placeholder="+91 00000 00000" 
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="input-group">
                     <label><MessageSquare size={14} /> Why choose US</label>
-                    <input type="text" placeholder="e.g. Your Interests" required />
+                    <input 
+                      type="text" 
+                      name="interests"
+                      placeholder="e.g. Your Interests" 
+                      value={formData.interests}
+                      onChange={handleChange}
+                      required 
+                    />
                   </div>
                 </div>
 
                 <div className="form-group-grid">
                   <div className="input-group">
                     <label>Subject</label>
-                    <select required>
+                    <select 
+                      name="service"
+                      value={formData.service}
+                      onChange={handleChange}
+                      required
+                    >
                       <option value="">Select a Service</option>
                       <option value="web">Web Development</option>
                       <option value="mobile">Mobile App Development</option>
@@ -176,7 +251,12 @@ const RequestQuote = () => {
                   </div>
                   <div className="input-group">
                     <label><Monitor size={14} /> Website Type</label>
-                    <select required>
+                    <select 
+                      name="websiteType"
+                      value={formData.websiteType}
+                      onChange={handleChange}
+                      required
+                    >
                       <option value="">Select Website Type</option>
                       <option value="business">Business Website</option>
                       <option value="ecommerce">E-commerce Store</option>
@@ -191,11 +271,18 @@ const RequestQuote = () => {
 
                 <div className="input-group">
                   <label><MessageSquare size={14} /> Project Details</label>
-                  <textarea placeholder="Tell us about your project, goals, and any specific requirements..." rows="5" required></textarea>
+                  <textarea 
+                    name="details"
+                    placeholder="Tell us about your project, goals, and any specific requirements..." 
+                    rows="5" 
+                    value={formData.details}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
                 </div>
 
-                <button type="submit" className="submit-quote-btn">
-                  GET MY FREE QUOTE <Send size={18} />
+                <button type="submit" className="submit-quote-btn" disabled={loading}>
+                  {loading ? 'PROCESSING...' : 'GET MY FREE QUOTE'} <Send size={18} />
                 </button>
               </form>
             </motion.div>

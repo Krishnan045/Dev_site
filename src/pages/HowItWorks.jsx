@@ -174,7 +174,7 @@ const HowItWorks = ({ setActivePage }) => {
 
       <style>{`
         .how-hero {
-          background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)), url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200');
+          background-image: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1200');
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;

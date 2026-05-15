@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
     "seed": "node backend/seed.js",
     "build": "vite build",

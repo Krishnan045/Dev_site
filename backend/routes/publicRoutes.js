@@ -1,4 +1,7 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import Banner from '../models/Banner.js';
 import Service from '../models/Service.js';
 import Settings from '../models/Settings.js';
@@ -7,6 +10,14 @@ import SuccessStory from '../models/SuccessStory.js';
 import Inquiry from '../models/Inquiry.js';
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, '../uploads');
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Get all banners
 router.get('/banners', async (req, res) => {
@@ -97,7 +108,21 @@ router.get('/stories', async (req, res) => {
 // Handle success story submission from client
 router.post('/stories/submit', async (req, res) => {
   try {
-    const { client, result, story, clientImage } = req.body;
+    let { client, result, story, clientImage } = req.body;
+    
+    // If clientImage is a base64 image, save it to the uploads folder natively
+    if (clientImage && clientImage.startsWith('data:image/')) {
+      const base64Data = clientImage.replace(/^data:image\/\w+;base64,/, '');
+      const mimeType = clientImage.match(/^data:image\/(\w+);base64,/)?.[1] || 'png';
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      const fileName = `${Date.now()}-client.${mimeType}`;
+      const filePath = path.join(uploadsDir, fileName);
+      
+      fs.writeFileSync(filePath, buffer);
+      clientImage = `/uploads/${fileName}`;
+    }
+
     const submission = await SuccessStory.create({
       client,
       result,

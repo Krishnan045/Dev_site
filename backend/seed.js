@@ -54,14 +54,18 @@ import mysql from 'mysql2/promise';
 const seed = async () => {
   try {
     if (!process.env.DATABASE_URL) {
-      const connection = await mysql.createConnection({
-        host: process.env.DB_HOST || '127.0.0.1',
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASS || '',
-      });
-      await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || 'devspectra'}\`;`);
-      await connection.end();
-      console.log('Database verified.');
+      try {
+        const connection = await mysql.createConnection({
+          host: process.env.DB_HOST || '127.0.0.1',
+          user: process.env.DB_USER || 'root',
+          password: process.env.DB_PASS || '',
+        });
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || 'devspectra'}\`;`);
+        await connection.end();
+        console.log('Database verified.');
+      } catch (dbErr) {
+        console.warn('Database auto-verification bypassed or failed. Continuing to seeding...', dbErr.message);
+      }
     } else {
       console.log('Using remote DATABASE_URL, skipping local database verification.');
     }
